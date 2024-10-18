@@ -170,7 +170,7 @@ cython_debug/
 /VITS-fast-fine-tuning/sampled_audio4ft_v2/*
 
 # 但不忽略資料夾本身
-!/onnx-output/*
-!/models/*
+!/onnx-output
+!/models
 # !/VITS-fast-fine-tuning/pretrained_models/*
 # !/VITS-fast-fine-tuning/sampled_audio4ft_v2/*
