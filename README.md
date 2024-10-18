@@ -33,6 +33,8 @@ The Sherpa-Onnx framework uses the next-generation Kaldi and onnxruntime for spe
 - [ ] **Features:**
   - [x] Provide conversion scripts.
   - [ ] Provide an operational WebUI.
+  - [ ] Provide Huggingface Online Demo.
+  - [ ] Provide Colab script.
 
 # Installation and Usage
 > [!TIP]  
@@ -42,39 +44,40 @@ The Sherpa-Onnx framework uses the next-generation Kaldi and onnxruntime for spe
 ### 1. Download Pre-trained Models
 Linux
 ```bash
-wget https://huggingface.co/spaces/zomehwh/vits-uma-genshin-honkai/resolve/main/model/G_953000.pth -P model/vits-uma-genshin-honkai
-wget https://huggingface.co/spaces/zomehwh/vits-uma-genshin-honkai/resolve/main/model/config.json -P model/vits-uma-genshin-honkai
+wget https://huggingface.co/spaces/zomehwh/vits-uma-genshin-honkai/resolve/main/model/G_953000.pth -P models/vits-uma-genshin-honkai
+wget https://huggingface.co/spaces/zomehwh/vits-uma-genshin-honkai/resolve/main/model/config.json -P models/vits-uma-genshin-honkai
 ```
 Windows
 ```bash
-Invoke-WebRequest -Uri https://huggingface.co/spaces/zomehwh/vits-uma-genshin-honkai/resolve/main/model/G_953000.pth -OutFile model/vits-uma-genshin-honkai/G_953000.pth
-Invoke-WebRequest -Uri https://huggingface.co/spaces/zomehwh/vits-uma-genshin-honkai/resolve/main/model/config.json -OutFile model/vits-uma-genshin-honkai/config.json
+Invoke-WebRequest -Uri https://huggingface.co/spaces/zomehwh/vits-uma-genshin-honkai/resolve/main/model/G_953000.pth -OutFile models/vits-uma-genshin-honkai/G_953000.pth
+Invoke-WebRequest -Uri https://huggingface.co/spaces/zomehwh/vits-uma-genshin-honkai/resolve/main/model/config.json -OutFile models/vits-uma-genshin-honkai/config.json
 ```
 
 ### 2. Create a virtual environment
 ```bash
-python3 -m venv fast_vits_env
+python3 -m venv venv
 ```
 
 ### 3. Activate the virtual environment
 Linux
 ```bash
-source fast_vits_env/bin/activate
+source venv/bin/activate
 ```
 Windows
 ```bash
-fast_vits_env\Scripts\activate
+venv\Scripts\activate
 ```
 
 ### 4. Install dependencies
 ```bash
 pip install -r requirements.txt
+python VITS-fast-fine-tuning/monotonic_align/setup.py build_ext
 ```
 
 ### 5. Run the script
 
 ```bash
-./export-vits-fast-fine-tuning-onnx.py --config ./model/vits-uma-genshin-honkai/config.json --checkpoint ./model/vits-uma-genshin-honkai/G_953000.pth
+python ./export-vits-fast-fine-tuning-onnx.py --config ./models/vits-uma-genshin-honkai/config.json --checkpoint ./models/vits-uma-genshin-honkai/G_953000.pth
 ```
 
 ## Launching the WebUI

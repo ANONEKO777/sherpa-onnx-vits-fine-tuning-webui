@@ -33,6 +33,8 @@ Sherpa-Onnxフレームワークは、新世代のKaldiとonnxruntimeを使用�
 - [ ] **機能:**
   - [x] 変換用のスクリプトを提供。
   - [ ] 操作可能なWebUIを提供。
+  - [ ] Huggingface Online Demoを提供する。
+  - [ ] Colabスクリプトを提供する。
 
 # インストールと使用方法
 > [!TIP]  
@@ -42,39 +44,40 @@ Sherpa-Onnxフレームワークは、新世代のKaldiとonnxruntimeを使用�
 ### 1. 事前訓練済みモデルをダウンロードする
 Linux
 ```bash
-wget https://huggingface.co/spaces/zomehwh/vits-uma-genshin-honkai/resolve/main/model/G_953000.pth -P model/vits-uma-genshin-honkai
-wget https://huggingface.co/spaces/zomehwh/vits-uma-genshin-honkai/resolve/main/model/config.json -P model/vits-uma-genshin-honkai
+wget https://huggingface.co/spaces/zomehwh/vits-uma-genshin-honkai/resolve/main/model/G_953000.pth -P models/vits-uma-genshin-honkai
+wget https://huggingface.co/spaces/zomehwh/vits-uma-genshin-honkai/resolve/main/model/config.json -P models/vits-uma-genshin-honkai
 ```
 Windows
 ```bash
-Invoke-WebRequest -Uri https://huggingface.co/spaces/zomehwh/vits-uma-genshin-honkai/resolve/main/model/G_953000.pth -OutFile model/vits-uma-genshin-honkai/G_953000.pth
-Invoke-WebRequest -Uri https://huggingface.co/spaces/zomehwh/vits-uma-genshin-honkai/resolve/main/model/config.json -OutFile model/vits-uma-genshin-honkai/config.json
+Invoke-WebRequest -Uri https://huggingface.co/spaces/zomehwh/vits-uma-genshin-honkai/resolve/main/model/G_953000.pth -OutFile models/vits-uma-genshin-honkai/G_953000.pth
+Invoke-WebRequest -Uri https://huggingface.co/spaces/zomehwh/vits-uma-genshin-honkai/resolve/main/model/config.json -OutFile models/vits-uma-genshin-honkai/config.json
 ```
 
 ### 2. 仮想環境を作成する
 ```bash
-python3 -m venv fast_vits_env
+python3 -m venv venv
 ```
 
 ### 3. 仮想環境を起動する
 Linux
 ```bash
-source fast_vits_env/bin/activate
+source venv/bin/activate
 ```
 Windows
 ```bash
-fast_vits_env\Scripts\activate
+venv\Scripts\activate
 ```
 
 ### 4. 依存関係をインストールする
 ```bash
 pip install -r requirements.txt
+python VITS-fast-fine-tuning/monotonic_align/setup.py build_ext
 ```
 
 ### 5. スクリプトを実行する
 
 ```bash
-./export-vits-fast-fine-tuning-onnx.py --config ./model/vits-uma-genshin-honkai/config.json --checkpoint ./model/vits-uma-genshin-honkai/G_953000.pth
+./export-vits-fast-fine-tuning-onnx.py --config ./models/vits-uma-genshin-honkai/config.json --checkpoint ./models/vits-uma-genshin-honkai/G_953000.pth
 ```
 
 ## WebUIを起動する

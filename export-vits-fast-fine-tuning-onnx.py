@@ -13,28 +13,28 @@ Usage:
 1. 下載預訓練模型 Download pre-trained models
 Linux
 ```bash
-wget https://huggingface.co/spaces/zomehwh/vits-uma-genshin-honkai/resolve/main/model/G_953000.pth -P vits-uma-genshin-honkai
-wget https://huggingface.co/spaces/zomehwh/vits-uma-genshin-honkai/resolve/main/model/config.json -P vits-uma-genshin-honkai
+wget https://huggingface.co/spaces/zomehwh/vits-uma-genshin-honkai/resolve/main/model/G_953000.pth -P models/vits-uma-genshin-honkai
+wget https://huggingface.co/spaces/zomehwh/vits-uma-genshin-honkai/resolve/main/model/config.json -P models/vits-uma-genshin-honkai
 ```
 Windows
 ```bash
-Invoke-WebRequest -Uri https://huggingface.co/spaces/zomehwh/vits-uma-genshin-honkai/resolve/main/model/G_953000.pth -OutFile vits-uma-genshin-honkai/G_953000.pth
-Invoke-WebRequest -Uri https://huggingface.co/spaces/zomehwh/vits-uma-genshin-honkai/resolve/main/model/config.json -OutFile vits-uma-genshin-honkai/config.json
+Invoke-WebRequest -Uri https://huggingface.co/spaces/zomehwh/vits-uma-genshin-honkai/resolve/main/model/G_953000.pth -OutFile models/vits-uma-genshin-honkai/G_953000.pth
+Invoke-WebRequest -Uri https://huggingface.co/spaces/zomehwh/vits-uma-genshin-honkai/resolve/main/model/config.json -OutFile models/vits-uma-genshin-honkai/config.json
 ```
 
 2. 建立虛擬環境 Create a virtual environment
 ```bash
-python3 -m venv fast_vits_env
+python3 -m venv venv
 ```
 
 3. 啟動虛擬環境 Activate the virtual environment
 Linux
 ```bash
-source fast_vits_env/bin/activate
+source venv/bin/activate
 ```
 Windows
 ```bash
-fast_vits_env\Scripts\activate
+venv\Scripts\activate
 ```
 
 4. 安裝依賴 Install dependencies
@@ -45,7 +45,7 @@ pip install -r requirements.txt
 5. 執行腳本 Run this file
 
 ```bash
-./export-vits-fast-fine-tuning-onnx.py --config ./vits-uma-genshin-honkai/config.json --checkpoint ./vits-uma-genshin-honkai/G_953000.pth
+./export-vits-fast-fine-tuning-onnx.py --config ./models/vits-uma-genshin-honkai/config.json --checkpoint ./models/vits-uma-genshin-honkai/G_953000.pth
 ```
 
 """
