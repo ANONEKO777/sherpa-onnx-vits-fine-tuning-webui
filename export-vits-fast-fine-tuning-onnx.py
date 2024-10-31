@@ -45,7 +45,7 @@ pip install -r requirements.txt
 5. 執行腳本 Run this file
 
 ```bash
-./export-vits-fast-fine-tuning-onnx.py --config ./models/vits-uma-genshin-honkai/config.json --checkpoint ./models/vits-uma-genshin-honkai/G_953000.pth
+python export-vits-fast-fine-tuning-onnx.py --config ./models/vits-uma-genshin-honkai/config.json --checkpoint ./models/vits-uma-genshin-honkai/G_953000.pth
 ```
 
 """
@@ -70,6 +70,7 @@ import commons
 import onnx
 import torch
 import utils
+import shutil
 from models import SynthesizerTrn
 from onnxruntime.quantization import QuantType, quantize_dynamic
 from text import _clean_text, text_to_sequence
@@ -96,6 +97,24 @@ def get_args():
         "--output_dir",
         type=str,
         default=_ouput_dir,
+    )
+
+    parser.add_argument(
+        "--comment",
+        type=str,
+        default="",
+    )
+
+    parser.add_argument(
+        "--language",
+        type=str,
+        default="Chinese",
+    )
+
+    parser.add_argument(
+        "--model_name",
+        type=str,
+        default="vits",
     )
 
     return parser.parse_args()
@@ -161,13 +180,13 @@ def add_meta_data(filename: str, meta_data: Dict[str, Any]):
     onnx.save(model, filename)
 
 
-def generate_tokens(hps, args):
-    with open(args.output_dir / "tokens.txt", "w", encoding="utf-8") as f:
+def generate_tokens(hps, output_path):
+    with open(output_path / "tokens.txt", "w", encoding="utf-8") as f:
         for i, s in enumerate(hps.symbols):
             f.write(f"{s} {i}\n")
     print("Generated tokens.txt")
 
-def generate_lexicon(hps, args):
+def generate_lexicon(hps, output_path):
     words = list()
 
     phrases = phrases_dict.phrases_dict
@@ -199,20 +218,27 @@ def generate_lexicon(hps, args):
 
         word2phone.append([w, " ".join(phones)])
 
-    with open(args.output_dir / "lexicon.txt", "w", encoding="utf-8") as f:
+    with open(output_path / "lexicon.txt", "w", encoding="utf-8") as f:
         for w, phones in word2phone:
             f.write(f"{w} {phones}\n")
     print("Generated lexicon.txt")
 
-
 @torch.no_grad()
-def main():
-    args = get_args()
-    check_args(args)
-    hps = utils.get_hparams_from_file(args.config)
-    
-    generate_tokens(hps, args)
-    generate_lexicon(hps, args)
+def export_onnx_model(hps, args):
+    """
+    將vits-fast-fine-tuning模型轉換為onnx格式
+    :param hps: config.json中的參數
+    :param args: 命令行參數
+    """
+    # 輸出目錄包含模型名稱
+    # Output directory contains model name
+    output_path = args.output_dir / args.model_name
+    # 創建目錄
+    # Create directory
+    output_path.mkdir(parents=True, exist_ok=True)
+
+    generate_tokens(hps, output_path)
+    generate_lexicon(hps, output_path)
 
     net_g = SynthesizerTrn(
         len(hps.symbols),
@@ -237,7 +263,7 @@ def main():
 
     opset_version = 13
 
-    filename = args.output_dir / "model.onnx"
+    filename = output_path / "model.onnx"
 
     torch.onnx.export(
         model,
@@ -261,8 +287,8 @@ def main():
     )
     meta_data = {
         "model_type": "vits",
-        "comment": "uma-genshin-honkai",
-        "language": "Chinese + Japanese",
+        "comment": args.comment,
+        "language": args.language,
         "jieba": 1,
         "add_blank": int(hps.data.add_blank),
         "n_speakers": int(hps.data.n_speakers),
@@ -274,15 +300,31 @@ def main():
 
     print("Generate int8 quantization models")
 
-    filename_int8 = args.output_dir / "model.int8.onnx"
+    filename_int8 = output_path / "model.int8.onnx"
     quantize_dynamic(
         model_input=filename,
         model_output=filename_int8,
         weight_type=QuantType.QUInt8,
     )
 
+    # 將source-for-output的檔案和資料夾全都複製到output_dir
+    # Copy all files and folders from source-for-output to output_dir
+    # 使用 shutil.copytree 複製整個目錄
+    source_dir = Path("source-for-output")
+    try:
+        shutil.copytree(source_dir, output_path, dirs_exist_ok=True)
+        print(f"Successfully copied {source_dir} to {output_path}")
+    except Exception as e:
+        print(f"Error copying directory: {e}")
+
+
     print(f"Saved to {filename} and {filename_int8}")
 
-
+def main():
+    args = get_args()
+    check_args(args)
+    hps = utils.get_hparams_from_file(args.config)
+    export_onnx_model(hps, args)
+    
 if __name__ == "__main__":
     main()
