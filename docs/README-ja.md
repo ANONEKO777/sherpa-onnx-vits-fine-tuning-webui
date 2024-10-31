@@ -30,11 +30,18 @@ Sherpa-Onnxフレームワークは、新世代のKaldiとonnxruntimeを使用�
 
 # Todoリスト
 
-- [ ] **機能:**
-  - [x] 変換用のスクリプトを提供。
-  - [ ] 操作可能なWebUIを提供。
-  - [ ] Huggingface Online Demoを提供する。
-  - [ ] Colabスクリプトを提供する。
+- [x] **変換用のスクリプトを提供。**
+- [ ] **操作可能なWebUIを提供。**
+  - [ ] ステップバイステップのトレーニング操作インターフェース。
+  - [ ] 短い音声、長い音声、ビデオトレーニングをサポート。
+  - [ ] 長い音声を短い音声に分割する機能、ビデオを音声に変換する機能をサポート。
+  - [ ] ノイズリダクションをサポートし、whisper音声からテキストへの変換をサポートし、ドキュメントに注釈を付ける。
+  - [ ] トレーニング後にモデル推論を直接使用可能。
+  - [ ] PytorchモデルをSherpa-Onnxモデルに変換する機能をサポート。
+  - [ ] Sherpa-Onnxモデル推論。
+- [ ] すべてのインストールコマンドを自動実行するワンクリックインストールを提供。
+- [ ] Huggingfaceオンラインデモを提供。
+- [ ] Colabスクリプトを提供。
 
 # インストールと使用方法
 > [!TIP]  
@@ -77,10 +84,83 @@ python VITS-fast-fine-tuning/monotonic_align/setup.py build_ext
 ### 5. スクリプトを実行する
 
 ```bash
-./export-vits-fast-fine-tuning-onnx.py --config ./models/vits-uma-genshin-honkai/config.json --checkpoint ./models/vits-uma-genshin-honkai/G_953000.pth
+python export-vits-fast-fine-tuning-onnx.py --config ./models/vits-uma-genshin-honkai/config.json --checkpoint ./models/vits-uma-genshin-honkai/G_953000.pth
+```
+コマンドラインの利用可能なパラメータの説明
+ - --config 必須 vitsのトレーニング完了後に生成されるconfigファイル。
+ - --checkpoint 必須 vitsのトレーニング完了後に生成されるpytorchモデル。
+ - --output_dir 任意 出力onnxモデルのフォルダ、デフォルトはonnx-output。
+ - --comment 任意 onnxモデル内の注釈情報。
+ - --language 任意 onnxモデル内の言語情報。
+ - --model_name 任意 モデル名、主に出力フォルダ内にサブフォルダを作成する際の名前。
+
+### 6. 出力結果
+出力が成功すると、フォルダonnx-output内にモデル名のフォルダが見つかるはずです。フォルダ内には以下のファイルと構造が含まれており、これらのファイルはsherpa-onnxで使用されます。model.onnxは元のモデルで、model.int8.onnxは量子化されたモデルで、どちらか一方を選択できます。model-opt.onnxは最適化されたモデルで、現在のところsherpa-onnxがサポートしているかどうかは不明です。
+```bash
+│  date.fst
+│  lexicon.txt
+│  model-opt.onnx
+│  model.int8.onnx
+│  model.onnx
+│  new_heteronym.fst
+│  number.fst
+│  phone.fst
+│  tokens.txt
+│
+└─dict
+    │  hmm_model.utf8
+    │  idf.utf8
+    │  jieba.dict.utf8
+    │  README.md
+    │  stop_words.utf8
+    │  user.dict.utf8
+    │
+    └─pos_dict
+            char_state_tab.utf8
+            prob_emit.utf8
+            prob_start.utf8
+            prob_trans.utf8
 ```
 
-## WebUIを起動する
+### 7. インファレンス
+```bash
+python onnx-inference.py --checkpoint ./onnx-output/vits-uma-genshin-honkai/model.onnx --lexicon ./onnx-output/vits-uma-genshin-honkai/lexicon.txt --tokens ./onnx-output/vits-uma-genshin-honkai/tokens.txt
+```
+コマンドラインの利用可能なパラメータの説明
+ - --checkpoint 必須 onnxモデル。
+ - --lexicon 必須 モデルで使用される音素表。
+ - --token 必須 モデルで使用されるシンボル表。
+ - --text 任意 テキストから音声への変換に使用される内容。
+
+## WebUIの起動
 > [!NOTE]  
-> 機能はまだ開発中です。
+> 機能は開発中です。
+
+## トレーニングコマンド
+> [!NOTE]  
+> 機能は開発中です。
+```bash
+# yt-dlpに変更しました。元々このプロジェクトで使用していたyoutube-dlは動画をダウンロードできなくなりました。
+python scripts/download_video.py
+# バグがあります
+python scripts/video2audio.py
+python scripts/denoise_audio.py
+# 注意：whisperにはffmpegが必要です
+python scripts/long_audio_transcribe.py --languages "C" --whisper_size large-v2
+```
+
+トレーニング中にffmpegが見つからない場合、以下のエラーメッセージが表示されることがあります。その場合は、ffmpegライブラリをインストールする必要があります。
+```bash
+DEBUG:torio._extension.utils:Loading FFmpeg
+DEBUG:torio._extension.utils:Failed to load FFmpeg extension.
+```
+
+torchの[公式ドキュメント](https://pytorch.org/audio/2.3.0/installation.html)によると、以下の命名規則に従ってライブラリを探します。インストールに問題がある場合は、関連するファイルが見つかるかどうかを確認してください。
+> FFmpegのインストールを検索する際、TorchAudioはバージョン番号を含むライブラリファイルを探します。つまり、libavutil.so.<VERSION>（Linux用）、libavutil.<VERSION>.dylib（macOS用）、およびavutil-<VERSION>.dll（Windows用）です。多くの一般的な事前ビルドされたバイナリはこの命名スキームに従いますが、一部のディストリビューションにはバージョン化されていないファイル名があります。FFmpegの検出に問題がある場合は、インストールされたライブラリファイルがこの命名スキームに従っているかどうかを確認し、それらがライブラリ検索パスにリストされているディレクトリの1つにあることを確認してください。
+
+Windowsバージョンのffmpegをインストールするには、以下のGitHubからコンパイル済みのライブラリを見つけることができます。
+https://github.com/BtbN/FFmpeg-Builds/releases
+
+特に注意すべき点は、ライブラリを含むバージョンを探すことです。本プロジェクトで使用されるtorchaudioには、ffmpegのバージョン6、5、4が必要なため、以下のURLからダウンロードすることをお勧めします。
+https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n6.1-latest-win64-lgpl-shared-6.1.zip
 
