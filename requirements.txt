@@ -23,9 +23,11 @@ indic_transliteration==2.3.37
 num_thai==0.0.5
 opencc==1.1.1
 demucs==4.0.1
-git+https://github.com/openai/whisper.git 
+# git+https://github.com/openai/whisper.git
+openai-whisper==20240930
 gradio==4.44.1
 imageio==2.35.1
 moviepy==1.0.3
 onnx==1.11.0
 onnxruntime==1.11.1
+gradio-i18n==0.1.1
