@@ -54,14 +54,15 @@ import sys
 sys.path.insert(0, "./VITS-fast-fine-tuning")  # noqa
 
 import argparse
+import os
 from pathlib import Path
 from typing import Dict, Any, List
 
 from pypinyin import load_phrases_dict, phrases_dict, pinyin_dict
 
 new_phrases = {
-    "行長": [["háng"], ["zhǎng"]],
-    "還我": [["huán"], ["wǒ"]],
+    "行長": [],
+    "還我": [],
 }
 
 load_phrases_dict(new_phrases)
@@ -181,7 +182,7 @@ def add_meta_data(filename: str, meta_data: Dict[str, Any]):
 
 
 def generate_tokens(hps, output_path):
-    with open(output_path / "tokens.txt", "w", encoding="utf-8") as f:
+    with open(os.path.join(output_path, "tokens.txt"), "w", encoding="utf-8") as f:
         for i, s in enumerate(hps.symbols):
             f.write(f"{s} {i}\n")
     print("Generated tokens.txt")
@@ -218,7 +219,7 @@ def generate_lexicon(hps, output_path):
 
         word2phone.append([w, " ".join(phones)])
 
-    with open(output_path / "lexicon.txt", "w", encoding="utf-8") as f:
+    with open(os.path.join(output_path, "lexicon.txt"), "w", encoding="utf-8") as f:
         for w, phones in word2phone:
             f.write(f"{w} {phones}\n")
     print("Generated lexicon.txt")
@@ -232,10 +233,10 @@ def export_onnx_model(hps, args):
     """
     # 輸出目錄包含模型名稱
     # Output directory contains model name
-    output_path = args.output_dir / args.model_name
+    output_path = os.path.join(args.output_dir, args.model_name)
     # 創建目錄
     # Create directory
-    output_path.mkdir(parents=True, exist_ok=True)
+    Path(output_path).mkdir(parents=True, exist_ok=True)
 
     generate_tokens(hps, output_path)
     generate_lexicon(hps, output_path)
@@ -263,7 +264,7 @@ def export_onnx_model(hps, args):
 
     opset_version = 13
 
-    filename = output_path / "model.onnx"
+    filename = os.path.join(output_path, "model.onnx")
 
     torch.onnx.export(
         model,
@@ -300,7 +301,7 @@ def export_onnx_model(hps, args):
 
     print("Generate int8 quantization models")
 
-    filename_int8 = output_path / "model.int8.onnx"
+    filename_int8 = os.path.join(output_path, "model.int8.onnx")
     quantize_dynamic(
         model_input=filename,
         model_output=filename_int8,
