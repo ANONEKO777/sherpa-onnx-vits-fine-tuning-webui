@@ -49,16 +49,24 @@ python export-vits-fast-fine-tuning-onnx.py --config ./models/vits-uma-genshin-h
 ```
 
 """
-import sys
-
-sys.path.insert(0, "./VITS-fast-fine-tuning")  # noqa
-
+# 標準函式庫
 import argparse
 import os
+import shutil
+# 第三方函式庫
+import onnx
+import torch
 from pathlib import Path
 from typing import Dict, Any, List
-
 from pypinyin import load_phrases_dict, phrases_dict, pinyin_dict
+from onnxruntime.quantization import QuantType, quantize_dynamic
+# 本地函式庫
+import vits_fast_fine_tuning.utils as utils
+import vits_fast_fine_tuning.commons as commons
+from vits_fast_fine_tuning.models import SynthesizerTrn
+from vits_fast_fine_tuning.text import _clean_text, text_to_sequence
+from vits_fast_fine_tuning.text.symbols import symbols
+from vits_fast_fine_tuning.text.symbols import _punctuation
 
 new_phrases = {
     "行長": [],
@@ -66,17 +74,6 @@ new_phrases = {
 }
 
 load_phrases_dict(new_phrases)
-
-import commons
-import onnx
-import torch
-import utils
-import shutil
-from models import SynthesizerTrn
-from onnxruntime.quantization import QuantType, quantize_dynamic
-from text import _clean_text, text_to_sequence
-from text.symbols import symbols
-from text.symbols import _punctuation
 
 _ouput_dir = Path("onnx-output")
 
