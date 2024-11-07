@@ -1,12 +1,14 @@
 # Description: 透過 Gradio 建立 Pytorch 模型轉出 Sherpa-Onnx 模型的設定頁面
 import os
+import argparse
 # 第三方函式庫
 import gradio as gr
 from gradio_i18n import gettext, translate_blocks
 # 本地函式庫
+from vits_fast_fine_tuning import utils
 import export_vits_fast_fine_tuning_onnx as export_onnx
+from .commons import add_prefix_to_translations, gettext, set_page_prefix
 
-_theme = gr.themes.Soft()
 _pytorch_model_folder = "models"
 _onnx_export_folder = "onnx-output"
 
@@ -59,18 +61,18 @@ _translations = {
     }
 }
 
+_page_prefix = "export_onnx"
+# 使用函數為每個鍵增加前綴，原因是目前i18n套件的字典是全介面共用的，因此用前綴區分不同功能頁面的翻譯
+_translations = add_prefix_to_translations(_translations, _page_prefix)
+
 # 讀取 models 資料夾底下的子資料夾項目
 def get_model_folders():
     return [f.name for f in os.scandir(_pytorch_model_folder) if f.is_dir()]
 
-# 初始化 model_folders
-_model_folders = get_model_folders()
-
 # 重新整理 model_folders
 def refresh_model_folders():
-    global _model_folders
-    _model_folders = get_model_folders()
-    return gr.update(choices=_model_folders)
+    model_folders = get_model_folders()
+    return gr.update(choices=model_folders)
 
 # 定義更新 pytorch_file 選項的函數
 def update_pytorch_files(model_folder):
@@ -100,21 +102,27 @@ def export_submit(model_folder, model_comment, language, model_name, pytorch_fil
     return str1 + str2 + str3 + str4 + str5
 
 def create_export_onnx_interface(lang):
-    with gr.Row():
-        model_folder = gr.Dropdown(label=gettext("model_folder"), choices=_model_folders)
-        refresh_model_folder_btn = gr.Button(value="\U0001F504")
-        # 按下重新整理按鈕時，重新讀取 model_folder 內的資料夾
-        refresh_model_folder_btn.click(refresh_model_folders, outputs=model_folder)
+    model_folders = get_model_folders()
+    with set_page_prefix(_page_prefix):
+        with gr.Blocks() as export_onnx_blocks:
+            title = gr.Markdown(gettext("title"))
 
-    pytorch_file = gr.Dropdown(label=gettext("pytorch_file"), choices=[])
-    # 當 model_folder 選擇改變時，更新 pytorch_file 的選項
-    model_folder.change(fn=update_pytorch_files, inputs=model_folder, outputs=pytorch_file)
-    model_comment = gr.Textbox(label=gettext("model_comment"))
-    languages = ["Chinese", "English+Chinese", "English+Chinese+Japanese"]
-    language = gr.Dropdown(label=gettext("language"), choices=languages)
-    model_name = gr.Textbox(label=gettext("model_name"))
-    submit_button = gr.Button(gettext("submit"))
-    output = gr.Textbox(label=gettext("output"))
+            with gr.Row():
+                model_folder = gr.Dropdown(label=gettext("model_folder"), choices=model_folders)
+                refresh_model_folder_btn = gr.Button(value="\U0001F504")
+                # 按下重新整理按鈕時，重新讀取 model_folder 內的資料夾
+                refresh_model_folder_btn.click(refresh_model_folders, outputs=model_folder)
 
-    submit_button.click(export_submit, inputs=[model_folder, model_comment, language, model_name, pytorch_file], outputs=output)
-    translate_blocks(translation=_translations, lang=lang)
+            pytorch_file = gr.Dropdown(label=gettext("pytorch_file"), choices=[])
+            # 當 model_folder 選擇改變時，更新 pytorch_file 的選項
+            model_folder.change(fn=update_pytorch_files, inputs=model_folder, outputs=pytorch_file)
+            model_comment = gr.Textbox(label=gettext("model_comment"))
+            languages = ["Chinese", "English+Chinese", "English+Chinese+Japanese"]
+            language = gr.Dropdown(label=gettext("language"), choices=languages)
+            model_name = gr.Textbox(label=gettext("model_name"))
+            submit_button = gr.Button(gettext("submit"))
+            output = gr.Textbox(label=gettext("output"))
+
+            submit_button.click(export_submit, inputs=[model_folder, model_comment, language, model_name, pytorch_file], outputs=output)
+    
+    translate_blocks(block=export_onnx_blocks, translation=_translations, lang=lang)

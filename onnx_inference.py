@@ -36,6 +36,12 @@ def get_args():
     )
 
     parser.add_argument(
+        "--sid",
+        type=int,
+        default=0,
+    )
+
+    parser.add_argument(
         "--checkpoint",
         type=str,
         required=True,
@@ -252,7 +258,16 @@ def infer(model, text, lexicon, tokens, sid):
         sid: int
     """
     y = generate(model, text, lexicon, tokens, sid)
-    return y.numpy(), model.sample_rate
+    return model.sample_rate, y.numpy()
+
+def infer_by_args(args):
+    model = OnnxModel(args.checkpoint)
+
+    lexicon = read_lexicon(args.lexicon)
+    tokens = read_tokens(args.tokens)
+    convert_lexicon(lexicon, tokens)
+
+    return infer(model, args.text, lexicon, tokens, args.sid)
 
 def main():
     args = get_args()
@@ -264,7 +279,7 @@ def main():
     tokens = read_tokens(args.tokens)
     convert_lexicon(lexicon, tokens)
 
-    audio, sample_rate = infer(model, args.text, lexicon, tokens, sid=0)
+    sample_rate, audio = infer(model, args.text, lexicon, tokens, args.sid)
     soundfile.write("test.wav", audio, sample_rate)
 
 

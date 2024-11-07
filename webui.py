@@ -15,9 +15,9 @@ _theme = gr.themes.Soft()
 def create_interface():
     with gr.Blocks(theme=_theme) as demo:
         lang = gr.Radio(choices=[("English", "en"), ("中文", "zh"), ("日本語", "ja")], label=gettext("Language"))
-        title = gr.Markdown(gettext("title"))
         
         ui.create_export_onnx_interface(lang=lang)
+        ui.create_onnx_inference_interface(lang=lang)
 
     return demo
 
