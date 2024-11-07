@@ -30,15 +30,16 @@ Sherpa-Onnxフレームワークは、新世代のKaldiとonnxruntimeを使用�
 
 # Todoリスト
 
-- [x] **変換用のスクリプトを提供。**
-- [ ] **操作可能なWebUIを提供。**
-  - [ ] ステップバイステップのトレーニング操作インターフェース。
-  - [ ] 短い音声、長い音声、ビデオトレーニングをサポート。
-  - [ ] 長い音声を短い音声に分割する機能、ビデオを音声に変換する機能をサポート。
-  - [ ] ノイズリダクションをサポートし、whisper音声からテキストへの変換をサポートし、ドキュメントに注釈を付ける。
+- [x] **変換用スクリプトを提供。**
+- [x] **操作可能なWebUIを提供。**
+  - [x] ステップバイステップのトレーニング操作インターフェース。
+  - [x] YouTubeからの音声一括ダウンロードをサポート。
+  - [ ] 短い音声、長い音声、ビデオのトレーニングをサポート。
+  - [ ] 長い音声を短い音声に分割する機能をサポート。
+  - [ ] ノイズ除去、Whisper音声からテキストへの変換、ドキュメントの注釈をサポート。
   - [ ] トレーニング後にモデル推論を直接使用可能。
-  - [ ] PytorchモデルをSherpa-Onnxモデルに変換する機能をサポート。
-  - [ ] Sherpa-Onnxモデル推論。
+  - [x] PytorchモデルをSherpa-Onnxモデルに変換することをサポート。
+  - [x] Sherpa-Onnxモデルの推論をサポート。
 - [ ] すべてのインストールコマンドを自動実行するワンクリックインストールを提供。
 - [ ] Huggingfaceオンラインデモを提供。
 - [ ] Colabスクリプトを提供。
@@ -78,13 +79,13 @@ venv\Scripts\activate
 ### 4. 依存関係をインストールする
 ```bash
 pip install -r requirements.txt
-python VITS-fast-fine-tuning/monotonic_align/setup.py build_ext
+python vits_fast_fine_tuning/monotonic_align/setup.py build_ext
 ```
 
 ### 5. スクリプトを実行する
 
 ```bash
-python export-vits-fast-fine-tuning-onnx.py --config ./models/vits-uma-genshin-honkai/config.json --checkpoint ./models/vits-uma-genshin-honkai/G_953000.pth
+python export_vits_fast_fine_tuning_onnx.py --config ./models/vits-uma-genshin-honkai/config.json --checkpoint ./models/vits-uma-genshin-honkai/G_953000.pth
 ```
 コマンドラインの利用可能なパラメータの説明
  - --config 必須 vitsのトレーニング完了後に生成されるconfigファイル。
@@ -124,7 +125,7 @@ python export-vits-fast-fine-tuning-onnx.py --config ./models/vits-uma-genshin-h
 
 ### 7. インファレンス
 ```bash
-python onnx-inference.py --checkpoint ./onnx-output/vits-uma-genshin-honkai/model.onnx --lexicon ./onnx-output/vits-uma-genshin-honkai/lexicon.txt --tokens ./onnx-output/vits-uma-genshin-honkai/tokens.txt
+python onnx_inference.py --checkpoint ./onnx-output/vits-uma-genshin-honkai/model.onnx --lexicon ./onnx-output/vits-uma-genshin-honkai/lexicon.txt --tokens ./onnx-output/vits-uma-genshin-honkai/tokens.txt
 ```
 コマンドラインの利用可能なパラメータの説明
  - --checkpoint 必須 onnxモデル。
@@ -135,6 +136,10 @@ python onnx-inference.py --checkpoint ./onnx-output/vits-uma-genshin-honkai/mode
 ## WebUIの起動
 > [!NOTE]  
 > 機能は開発中です。
+
+```bash
+python webui.py
+```
 
 ## トレーニングコマンド
 > [!NOTE]  

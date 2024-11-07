@@ -31,14 +31,15 @@ Sherpa-Onnx框架使用新一代 Kaldi 和 onnxruntime 進行語音轉文字、�
 # Todo List
 
 - [x] **提供轉換用的腳本。**
-- [ ] **提供可供操作的WebUI。**
-  - [ ] Step-by-Step的訓練操作介面。
+- [x] **提供可供操作的WebUI。**
+  - [x] Step-by-Step的訓練操作介面。
+  - [x] 支援從Youtube上批量下載語音。
   - [ ] 支援短語音、長語音、影片訓練。
-  - [ ] 支援長語音切分成短語音功能，支援影片轉語音功能。
+  - [ ] 支援長語音切分成短語音功能。
   - [ ] 支援語音降躁，支援whisper語音轉文字辨識，標註文件。
   - [ ] 訓練後可直接用模型推理。
-  - [ ] 支援Pytorch模型轉換為Sherpa-Onnx模型。
-  - [ ] Sherpa-Onnx模型推理。
+  - [x] 支援Pytorch模型轉換為Sherpa-Onnx模型。
+  - [x] Sherpa-Onnx模型推理。
 - [ ] 提供一鍵安裝自動執行所有安裝指令。
 - [ ] 提供Huggingface Online Demo。
 - [ ] 提供Colab腳本。
@@ -78,13 +79,13 @@ venv\Scripts\activate
 ### 4. 安裝依賴
 ```bash
 pip install -r requirements.txt
-python VITS-fast-fine-tuning/monotonic_align/setup.py build_ext
+python vits_fast_fine_tuning/monotonic_align/setup.py build_ext
 ```
 
 ### 5. 執行腳本
 
 ```bash
-python export-vits-fast-fine-tuning-onnx.py --config ./models/vits-uma-genshin-honkai/config.json --checkpoint ./models/vits-uma-genshin-honkai/G_953000.pth
+python export_vits_fast_fine_tuning_onnx.py --config ./models/vits-uma-genshin-honkai/config.json --checkpoint ./models/vits-uma-genshin-honkai/G_953000.pth
 ```
 命令列的可用參數說明
  - --config 必要 vits訓練完成後產生的config檔。
@@ -124,7 +125,7 @@ python export-vits-fast-fine-tuning-onnx.py --config ./models/vits-uma-genshin-h
 
 ### 7. 推理
 ```bash
-python onnx-inference.py --checkpoint ./onnx-output/vits-uma-genshin-honkai/model.onnx --lexicon ./onnx-output/vits-uma-genshin-honkai/lexicon.txt --tokens ./onnx-output/vits-uma-genshin-honkai/tokens.txt
+python onnx_inference.py --checkpoint ./onnx-output/vits-uma-genshin-honkai/model.onnx --lexicon ./onnx-output/vits-uma-genshin-honkai/lexicon.txt --tokens ./onnx-output/vits-uma-genshin-honkai/tokens.txt
 ```
 命令列的可用參數說明
  - --checkpoint 必要 onnx模型。
@@ -136,6 +137,9 @@ python onnx-inference.py --checkpoint ./onnx-output/vits-uma-genshin-honkai/mode
 > [!NOTE]  
 > 功能尚在開發中。
 
+```bash
+python webui.py
+```
 
 ## 訓練指令
 > [!NOTE]  

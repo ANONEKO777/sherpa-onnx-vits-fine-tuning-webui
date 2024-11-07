@@ -32,13 +32,14 @@ The Sherpa-Onnx framework uses the next-generation Kaldi and onnxruntime for spe
 
 - [x] **Provide conversion scripts.**
 - [ ] **Provide an operational WebUI.**
-  - [ ] Step-by-step training interface.
-  - [ ] Support for short audio, long audio, and video training.
+  - [x] Step-by-step training interface.
+  - [x] Support batch downloading of audio from YouTube.
+  - [ ] Support for short audio, long audio.
   - [ ] Support for splitting long audio into short audio, and converting video to audio.
   - [ ] Support for audio denoising, whisper speech-to-text recognition, and annotation files.
   - [ ] Direct model inference after training.
-  - [ ] Support for converting Pytorch models to Sherpa-Onnx models.
-  - [ ] Sherpa-Onnx model inference.
+  - [x] Support for converting Pytorch models to Sherpa-Onnx models.
+  - [x] Sherpa-Onnx model inference.
 - [ ] Provide a one-click installation script to automatically execute all installation commands.
 - [ ] Provide a Huggingface Online Demo.
 - [ ] Provide a Colab script.
@@ -78,13 +79,13 @@ venv\Scripts\activate
 ### 4. Install dependencies
 ```bash
 pip install -r requirements.txt
-python VITS-fast-fine-tuning/monotonic_align/setup.py build_ext
+python vits_fast_fine_tuning/monotonic_align/setup.py build_ext
 ```
 
 ### 5. Run the script
 
 ```bash
-python export-vits-fast-fine-tuning-onnx.py --config ./models/vits-uma-genshin-honkai/config.json --checkpoint ./models/vits-uma-genshin-honkai/G_953000.pth
+python export_vits_fast_fine_tuning_onnx.py --config ./models/vits-uma-genshin-honkai/config.json --checkpoint ./models/vits-uma-genshin-honkai/G_953000.pth
 ```
 Command Line Parameters
  - --config (required) The config file generated after VITS training.
@@ -124,7 +125,7 @@ After successful output, you should find a folder named after the model name in 
 
 ### 7. Inference
 ```bash
-python onnx-inference.py --checkpoint ./onnx-output/vits-uma-genshin-honkai/model.onnx --lexicon ./onnx-output/vits-uma-genshin-honkai/lexicon.txt --tokens ./onnx-output/vits-uma-genshin-honkai/tokens.txt
+python onnx_inference.py --checkpoint ./onnx-output/vits-uma-genshin-honkai/model.onnx --lexicon ./onnx-output/vits-uma-genshin-honkai/lexicon.txt --tokens ./onnx-output/vits-uma-genshin-honkai/tokens.txt
 ```
 Command Line Parameters
  - --checkpoint (required) The ONNX model.
@@ -135,6 +136,10 @@ Command Line Parameters
 ## Launching the WebUI
 > [!NOTE]  
 > This feature is still under development.
+
+```bash
+python webui.py
+```
 
 ## Training Commands
 > [!NOTE]  
