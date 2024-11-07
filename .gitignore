@@ -164,13 +164,11 @@ cython_debug/
 # 忽略資料夾內的所有檔案
 /onnx-output/**
 /models/**
-/VITS-fast-fine-tuning/pretrained_models/**
-/VITS-fast-fine-tuning/pretrained_models/*
-/VITS-fast-fine-tuning/sampled_audio4ft_v2/**
-/VITS-fast-fine-tuning/sampled_audio4ft_v2/*
+/training_data/**
+/training_data/raw_audio/**
 
 # 但不忽略資料夾本身
 !/onnx-output
 !/models
-# !/VITS-fast-fine-tuning/pretrained_models/*
-# !/VITS-fast-fine-tuning/sampled_audio4ft_v2/*
+!/training_data
+!/training_data/raw_audio
