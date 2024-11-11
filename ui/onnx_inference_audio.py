@@ -75,7 +75,7 @@ def create_onnx_inference_interface(lang):
                 refresh_btn = gr.Button(value="\U0001F504")
                 refresh_btn.click(refresh_model_folders, inputs=[], outputs=model_folder)
 
-            submit_button = gr.Button(gettext("submit"))
+            submit_button = gr.Button(gettext("submit"), variant="primary")
             output_audio = gr.Audio(label=gettext("output_audio"))
 
             submit_button.click(submit, inputs=[text, sid, model_folder], outputs=output_audio)

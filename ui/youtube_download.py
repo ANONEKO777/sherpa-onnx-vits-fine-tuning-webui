@@ -4,7 +4,6 @@ from concurrent.futures import ThreadPoolExecutor
 import random
 # 第三方函式庫
 import gradio as gr
-import gradio_i18n
 from gradio_i18n import translate_blocks
 import pandas as pd
 # 本地函式庫
@@ -95,7 +94,7 @@ def download_video(info):
     elif platform.system() == "Darwin":
         os.system(f"yt-dlp_macos {link} -x --audio-format wav --output {_raw_audio_folder}/{filename}.wav --no-check-certificate")
 
-def download_videos(info):
+def download_videos():
     with set_page_prefix(_page_prefix):
         os.makedirs(_raw_audio_folder, exist_ok=True)
         try:
@@ -117,12 +116,12 @@ def create_youtube_download_interface(lang):
                 speaker_input = gr.Textbox(label=gettext("Speaker"))
                 url_input = gr.Textbox(label=gettext("YouTube URL"))
 
-            add_button = gr.Button(value=gettext("Add to List"))
+            add_button = gr.Button(value=gettext("Add to List"), variant="primary")
             video_df = gr.DataFrame(df, label=gettext("Video List"), interactive=True)
             with gr.Row():
                 delete_index = gr.Textbox(label=gettext("Delete Index"))
-                delete_button = gr.Button(value=gettext("Delete from List"))
-            download_button = gr.Button(value=gettext("Download All"))
+                delete_button = gr.Button(value=gettext("Delete from List"), variant="stop")
+            download_button = gr.Button(value=gettext("Download All"), variant="primary")
             download_result = gr.Textbox(label=gettext("Download Result"))
 
             add_button.click(fn=add_to_list, inputs=[speaker_input, url_input], outputs=video_df)
