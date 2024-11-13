@@ -55,7 +55,7 @@ def denoise_audio(raw_audio_dir, denoise_audio_dir):
                 source = source.mean(dim=0).unsqueeze(0)
                 # 重新採樣
                 source = torchaudio.transforms.Resample(orig_freq=separator.model.samplerate, new_freq=target_sr)(source)
-                torchaudio.save(os.path.join(denoise_audio_dir, f"{file}.wav"), source, target_sr, channels_first=True)
+                torchaudio.save(os.path.join(denoise_audio_dir, file), source, target_sr, channels_first=True)
 
 def main():
     args = get_args()
