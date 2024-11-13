@@ -31,12 +31,13 @@ The Sherpa-Onnx framework uses the next-generation Kaldi and onnxruntime for spe
 # Todo List
 
 - [x] **Provide conversion scripts.**
-- [ ] **Provide an operational WebUI.**
+- [x] **Provide an operational WebUI.**
   - [x] Step-by-step training interface.
   - [x] Support batch downloading of audio from YouTube.
-  - [ ] Support for short audio, long audio.
-  - [ ] Support for splitting long audio into short audio, and converting video to audio.
-  - [ ] Support for audio denoising, whisper speech-to-text recognition, and annotation files.
+  - [x] Support splitting long audio into short audio.
+  - [x] Support audio denoising, whisper speech-to-text recognition, and annotation files.
+  - [ ] Support VITS training.
+  - [ ] Support training with short audio, long audio, and video materials.
   - [ ] Direct model inference after training.
   - [x] Support for converting Pytorch models to Sherpa-Onnx models.
   - [x] Sherpa-Onnx model inference.
