@@ -164,11 +164,13 @@ cython_debug/
 # 忽略資料夾內的所有檔案
 /onnx-output/**
 /models/**
-/training_data/**
 /training_data/raw_audio/**
+/training_data/denoised_audio/**
+/training_data/segmented_character_voice/**
 
-# 但不忽略資料夾本身
-!/onnx-output
-!/models
-!/training_data
-!/training_data/raw_audio
+# 維持.gitkeep檔案可以讓空資料夾被git追蹤
+!/onnx-output/.gitkeep
+!/models/.gitkeep
+!/training_data/raw_audio/.gitkeep
+!/training_data/denoised_audio/.gitkeep
+!/training_data/segmented_character_voice/.gitkeep
