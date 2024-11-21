@@ -6,3 +6,4 @@ from .onnx_inference_audio import create_onnx_inference_interface
 from .youtube_download import create_youtube_download_interface
 from .denoise_audio import create_denoise_audio_interface
 from .transcribe_audio import create_transcribe_audio_interface
+from .stdout_interface import create_stdout_interface

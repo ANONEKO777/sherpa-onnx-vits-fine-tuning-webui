@@ -31,3 +31,4 @@ moviepy==1.0.3
 onnx==1.11.0
 onnxruntime==1.11.1
 gradio-i18n==0.1.1
+gradio_log==0.0.7
