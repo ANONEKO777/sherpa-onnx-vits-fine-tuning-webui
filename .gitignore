@@ -168,6 +168,11 @@ cython_debug/
 /training_data/denoised_audio/**
 /training_data/segmented_character_voice/**
 
+# 忽略training_data的一部分檔案，這些都是訓練過程產生的暫存檔
+/training_data/final_annotation_train.txt
+/training_data/final_annotation_val.txt
+/training_data/long_character_anno.txt
+
 # 維持.gitkeep檔案可以讓空資料夾被git追蹤
 !/onnx-output/.gitkeep
 !/models/.gitkeep
