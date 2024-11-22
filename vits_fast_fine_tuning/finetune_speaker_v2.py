@@ -19,41 +19,84 @@ import logging
 
 logging.getLogger('numba').setLevel(logging.WARNING)
 
-import commons
-import utils
-from data_utils import (
+from . import commons
+from . import utils
+from .data_utils import (
   TextAudioSpeakerLoader,
   TextAudioSpeakerCollate,
   DistributedBucketSampler
 )
-from models import (
+from .models import (
   SynthesizerTrn,
   MultiPeriodDiscriminator,
 )
-from losses import (
+from .losses import (
   generator_loss,
   discriminator_loss,
   feature_loss,
   kl_loss
 )
-from mel_processing import mel_spectrogram_torch, spec_to_mel_torch
+from .mel_processing import mel_spectrogram_torch, spec_to_mel_torch
 
 
 torch.backends.cudnn.benchmark = True
 global_step = 0
 
+def str2bool(v):
+    if isinstance(v, bool):
+        return v
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
 
-def main():
-  """Assume Single Node Multi GPUs Training Only"""
-  assert torch.cuda.is_available(), "CPU training is not allowed."
+def get_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-c', '--config', type=str, default="training_data/configs/modified_finetune_speaker.json",
+                        help='JSON file for configuration')
+    parser.add_argument('-m', '--model', type=str, default="models",
+                        help='Model name')
+    parser.add_argument('-n', '--max_epochs', type=int, default=100,
+                        help='finetune epochs')
+    parser.add_argument('--cont', type=str2bool, default=False, help='whether to continue training on the latest checkpoint')
+    parser.add_argument('--drop_speaker_embed', type=str2bool, default=False, help='whether to drop existing characters')
+    parser.add_argument('--train_with_pretrained_model', type=str2bool, default=True,
+                        help='whether to train with pretrained model')
+    parser.add_argument('--preserved', type=int, default=4,
+                        help='Number of preserved models')
 
-  n_gpus = torch.cuda.device_count()
-  os.environ['MASTER_ADDR'] = 'localhost'
-  os.environ['MASTER_PORT'] = '8000'
+    return parser.parse_args()
 
-  hps = utils.get_hparams()
-  mp.spawn(run, nprocs=n_gpus, args=(n_gpus, hps,))
+def run_finetuning(
+        config_path: str,
+        model_name: str,
+        max_epochs: int,
+        continue_training: bool,
+        drop_speaker_embed: bool,
+        train_with_pretrained_model: bool,
+        preserved_models: int
+    ):
+    """Assume Single Node Multi GPUs Training Only"""
+    assert torch.cuda.is_available(), "CPU training is not allowed."
 
+    n_gpus = torch.cuda.device_count()
+    os.environ['MASTER_ADDR'] = 'localhost'
+    os.environ['MASTER_PORT'] = '8000'
+
+    args = argparse.Namespace(
+        config=config_path,
+        model=model_name,
+        max_epochs=max_epochs,
+        cont=continue_training,
+        drop_speaker_embed=drop_speaker_embed,
+        train_with_pretrained_model=train_with_pretrained_model,
+        preserved=preserved_models
+    )
+
+    hps = utils.get_hparams(args)
+    mp.spawn(run, nprocs=n_gpus, args=(n_gpus, hps,))
 
 def run(rank, n_gpus, hps):
   global global_step
@@ -107,8 +150,8 @@ def run(rank, n_gpus, hps):
           print("Failed to find latest checkpoint, loading G_0.pth...")
           if hps.train_with_pretrained_model:
               print("Train with pretrained model...")
-              _, _, _, epoch_str = utils.load_checkpoint("./pretrained_models/G_0.pth", net_g, None)
-              _, _, _, epoch_str = utils.load_checkpoint("./pretrained_models/D_0.pth", net_d, None)
+              _, _, _, epoch_str = utils.load_checkpoint("training_data/pretrained_models/G_0.pth", net_g, None)
+              _, _, _, epoch_str = utils.load_checkpoint("training_data/pretrained_models/D_0.pth", net_d, None)
           else:
               print("Train without pretrained model...")
           epoch_str = 1
@@ -116,8 +159,8 @@ def run(rank, n_gpus, hps):
   else:
       if hps.train_with_pretrained_model:
           print("Train with pretrained model...")
-          _, _, _, epoch_str = utils.load_checkpoint("./pretrained_models/G_0.pth", net_g, None)
-          _, _, _, epoch_str = utils.load_checkpoint("./pretrained_models/D_0.pth", net_d, None)
+          _, _, _, epoch_str = utils.load_checkpoint("training_data/pretrained_models/G_0.pth", net_g, None)
+          _, _, _, epoch_str = utils.load_checkpoint("training_data/pretrained_models/D_0.pth", net_d, None)
       else:
           print("Train without pretrained model...")
       epoch_str = 1
@@ -367,6 +410,9 @@ def evaluate(hps, generator, eval_loader, writer_eval):
     )
     generator.train()
 
+def main():
+    args = get_args()
+    run_finetuning(args)
 
 if __name__ == "__main__":
   main()

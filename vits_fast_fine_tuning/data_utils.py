@@ -6,10 +6,10 @@ import torch
 import torch.utils.data
 import torchaudio
 
-import commons
-from mel_processing import spectrogram_torch
-from utils import load_wav_to_torch, load_filepaths_and_text
-from text import text_to_sequence, cleaned_text_to_sequence
+from . import commons
+from .mel_processing import spectrogram_torch
+from .utils import load_wav_to_torch, load_filepaths_and_text
+from .text import text_to_sequence, cleaned_text_to_sequence
 """Multi speaker version"""
 
 

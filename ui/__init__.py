@@ -5,3 +5,4 @@ from .denoise_audio import create_denoise_audio_interface
 from .transcribe_audio import create_transcribe_audio_interface
 from .stdout_interface import create_stdout_interface
 from .preprocess import create_preprocess_interface
+from .finetuning import create_finetuning_interface

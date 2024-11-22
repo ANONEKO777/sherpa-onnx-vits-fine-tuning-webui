@@ -89,8 +89,8 @@ def preprocess(languages, add_auxiliary_data):
         hps['train']['log_interval'] = 10
         hps['train']['eval_interval'] = 100
         hps['train']['batch_size'] = 16
-        hps['data']['training_files'] = "final_annotation_train.txt"
-        hps['data']['validation_files'] = "final_annotation_val.txt"
+        hps['data']['training_files'] = "training_data/final_annotation_train.txt"
+        hps['data']['validation_files'] = "training_data/final_annotation_val.txt"
         # save modified config
         with open("training_data/configs/modified_finetune_speaker.json", 'w', encoding='utf-8') as f:
             json.dump(hps, f, indent=2)
@@ -140,8 +140,8 @@ def preprocess(languages, add_auxiliary_data):
         hps['train']['log_interval'] = 10
         hps['train']['eval_interval'] = 100
         hps['train']['batch_size'] = 16
-        hps['data']['training_files'] = "final_annotation_train.txt"
-        hps['data']['validation_files'] = "final_annotation_val.txt"
+        hps['data']['training_files'] = "training_data/final_annotation_train.txt"
+        hps['data']['validation_files'] = "training_data/final_annotation_val.txt"
         # save modified config
         with open("training_data/configs/modified_finetune_speaker.json", 'w', encoding='utf-8') as f:
             json.dump(hps, f, indent=2)

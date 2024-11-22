@@ -15,6 +15,7 @@ def create_interface():
         ui.create_denoise_audio_interface(lang=lang)
         ui.create_transcribe_audio_interface(lang=lang)
         ui.create_preprocess_interface(lang=lang)
+        ui.create_finetuning_interface(lang=lang)
         ui.create_export_onnx_interface(lang=lang)
         ui.create_onnx_inference_interface(lang=lang)
         ui.create_stdout_interface(lang=lang)
