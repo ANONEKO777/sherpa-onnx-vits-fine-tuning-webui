@@ -12,7 +12,7 @@ _translations = {
         "add_auxiliary_data": "Add auxiliary data",
         "submit": "Submit",
         "output": "Output",
-        "preprocess complete": "Preprocess complete",
+        "preprocess complete": "Preprocess complete. final_annotation_train.txt and final_annotation_val.txt will be created in the training_data folder, and modified_finetune_speaker.json will be created in the configs folder.",
     },
     "zh": {
         "title": "<h1 style='text-align: center;'>預處理資料以進行微調</h1>",
@@ -21,7 +21,7 @@ _translations = {
         "add_auxiliary_data": "添加輔助資料",
         "submit": "提交",
         "output": "輸出結果",
-        "preprocess complete": "預處理完成",
+        "preprocess complete": "預處理完成，在training_data資料夾中會建立final_annotation_train.txt和final_annotation_val.txt，configs資料夾會建立modified_finetune_speaker.json。",
     },
     "ja": {
         "title": "<h1 style='text-align: center;'>微調用のデータを前処理する</h1>",
@@ -30,7 +30,7 @@ _translations = {
         "add_auxiliary_data": "補助データを追加",
         "submit": "提出",
         "output": "出力",
-        "preprocess complete": "前処理完了",
+        "preprocess complete": "前処理が完了しました。training_dataフォルダにfinal_annotation_train.txtとfinal_annotation_val.txtが作成され、configsフォルダにmodified_finetune_speaker.jsonが作成されます。"
     },
 }
 

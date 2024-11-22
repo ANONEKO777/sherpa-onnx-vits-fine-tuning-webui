@@ -18,6 +18,7 @@ _translations = {
         "title": "<h1 style='text-align: center;'>Pytorch Model to Sherpa-Onnx Model Configuration Page</h1>",
         "model_folder": "Select Pytorch Model Folder",
         "pytorch_file": "Select Pytorch Model File",
+        "Pytorch File Info": "Usually select G_latest.pth",
         "model_comment": "Enter Model Comment",
         "language": "Select Language",
         "model_name": "Enter Model Name",
@@ -33,6 +34,7 @@ _translations = {
         "title": "<h1 style='text-align: center;'>Pytorch模型轉出Sherpa-Onnx模型設定頁面</h1>",
         "model_folder": "選擇Pytorch模型位置",
         "pytorch_file": "選擇Pytorch模型檔案",
+        "Pytorch File Info": "通常選擇G_latest.pth",
         "model_comment": "輸入模型註解",
         "language": "選擇語言",
         "model_name": "輸入模型名稱",
@@ -48,6 +50,7 @@ _translations = {
         "title": "<h1 style='text-align: center;'>PytorchモデルをSherpa-Onnxモデルに変換する設定ページ</h1>",
         "model_folder": "Pytorchモデルの場所を選択",
         "pytorch_file": "Pytorchモデルファイルを選択",
+        "Pytorch File Info": "通常はG_latest.pthを選択します",
         "model_comment": "モデルコメントを入力",
         "language": "言語を選択",
         "model_name": "モデル名を入力",
@@ -82,22 +85,23 @@ def update_pytorch_files(model_folder):
 
 
 def export_submit(model_folder, model_comment, language, model_name, pytorch_file):
-    args = argparse.Namespace(
-        config=os.path.join(_pytorch_model_folder, model_folder, "config.json"),
-        checkpoint=os.path.join(_pytorch_model_folder, model_folder, pytorch_file),
-        output_dir=_onnx_export_folder,
-        comment=model_comment,
-        language=language,
-        model_name=f"vits-{model_name}",
-    )
-    hps = utils.get_hparams_from_file(args.config)
-    export_onnx.export_onnx_model(hps, args)
-    # 返回args所有參數的字串
-    str1 = gettext("config: {config}\n").format(config=args.config)
-    str2 = gettext("checkpoint: {checkpoint}\n").format(checkpoint=args.checkpoint)
-    str3 = gettext("output_dir: {output_dir}\n").format(output_dir=args.output_dir)
-    str4 = gettext("comment: {comment}\n").format(comment=args.comment)
-    str5 = gettext("language: {language}\n").format(language=args.language)
+    with set_page_prefix(_page_prefix):
+        args = argparse.Namespace(
+            config=os.path.join(_pytorch_model_folder, model_folder, "config.json"),
+            checkpoint=os.path.join(_pytorch_model_folder, model_folder, pytorch_file),
+            output_dir=_onnx_export_folder,
+            comment=model_comment,
+            language=language,
+            model_name=f"vits-{model_name}",
+        )
+        hps = utils.get_hparams_from_file(args.config)
+        export_onnx.export_onnx_model(hps, args)
+        # 返回args所有參數的字串
+        str1 = gettext("config: {config}\n").format(config=args.config)
+        str2 = gettext("checkpoint: {checkpoint}\n").format(checkpoint=args.checkpoint)
+        str3 = gettext("output_dir: {output_dir}\n").format(output_dir=args.output_dir)
+        str4 = gettext("comment: {comment}\n").format(comment=args.comment)
+        str5 = gettext("language: {language}\n").format(language=args.language)
 
     return str1 + str2 + str3 + str4 + str5
 
@@ -113,7 +117,7 @@ def create_export_onnx_interface(lang):
                 # 按下重新整理按鈕時，重新讀取 model_folder 內的資料夾
                 refresh_model_folder_btn.click(refresh_model_folders, outputs=model_folder)
 
-            pytorch_file = gr.Dropdown(label=gettext("pytorch_file"), choices=[])
+            pytorch_file = gr.Dropdown(label=gettext("pytorch_file"), choices=[], info=gettext("Pytorch File Info"))
             # 當 model_folder 選擇改變時，更新 pytorch_file 的選項
             model_folder.change(fn=update_pytorch_files, inputs=model_folder, outputs=pytorch_file)
             model_comment = gr.Textbox(label=gettext("model_comment"))
