@@ -7,8 +7,8 @@ from .rolling_file_handler import RollingFileHandler
 
 sys_logger = logging.getLogger('sys_logger')
 
-# 每個日誌檔案最大為 10MB，無限保留備份文件
-handler = RollingFileHandler(f"./sys.stdout.log", encoding='utf-8', maxBytes=1e7)
+# 每個日誌檔案最大為 100MB，無限保留備份文件
+handler = RollingFileHandler(f"./sys.stdout.log", encoding='utf-8', maxBytes=1e8)
 
 # 設定日誌級別
 handler.setLevel(logging.DEBUG)
@@ -66,7 +66,7 @@ class StreamToLogger:
 
     def flush(self):
         self.stream.flush()  # 確保原始 stdout 的緩衝區也被刷新
-    
+
     def isatty(self):
         return self.stream.isatty()  # 委託給原始 stdout 的 isatty 方法
 

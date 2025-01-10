@@ -10,6 +10,7 @@ _translations = {
         "language_model": "Select the language of the audio, which will affect the type of the model after training",
         "whisper_size": "Select the Whisper model size, the larger the size, the higher the accuracy",
         "denoise_audio_dir": "Source audio directory (denoised audio directory)",
+        "merge_count": "For fast-speaking voice actors, you can use Merge Count to combine multiple sentences into one to avoid the problem of training too short speech",
         "submit": "Submit",
         "output": "Output",
         "transcribe complete": "Transcribe complete",
@@ -19,6 +20,7 @@ _translations = {
         "language_model": "選擇音訊的語言，將影響訓練後模型類型",
         "whisper_size": "選擇Whisper模型大小，越大精準度越高",
         "denoise_audio_dir": "來源音訊目錄(去噪音訊目錄)",
+        "merge_count": "針對語速比較快的配音員，可以使用Merge Count將多個句子合併成一個句子，避免訓練語音太短的問題",
         "submit": "提交",
         "output": "輸出結果",
         "transcribe complete": "標注完成",
@@ -28,6 +30,7 @@ _translations = {
         "language_model": "音声の言語を選択し、トレーニング後のモデルタイプに影響します",
         "whisper_size": "Whisperモデルサイズを選択します。サイズが大きいほど精度が高くなります",
         "denoise_audio_dir": "ソースオーディオディレクトリ（ノイズ除去オーディオディレクトリ）",
+        "merge_count": "話す速度が速い声優の場合、Merge Countを使用して複数の文を1つに結合し、トレーニング音声が短すぎる問題を回避できます",
         "submit": "提出",
         "output": "出力",
         "transcribe complete": "転写完了",
@@ -37,9 +40,9 @@ _translations = {
 _page_prefix = "transcribe_audio"
 _translations = add_prefix_to_translations(_translations, _page_prefix)
 
-def submit(denoise_audio_dir, language_model, whisper_size):
+def submit(denoise_audio_dir, language_model, whisper_size, merge_count):
     with set_page_prefix(_page_prefix):
-        long_audio.transcribe_audio(denoise_audio_dir, language_model, whisper_size)
+        long_audio.transcribe_audio(denoise_audio_dir, language_model, whisper_size, merge_count)
         return gettext("transcribe complete")
 
 def create_transcribe_audio_interface(lang):
@@ -64,9 +67,10 @@ def create_transcribe_audio_interface(lang):
                 value="large-v2"
             )
             denoise_audio_dir = gr.Textbox(label=gettext("denoise_audio_dir"), value="training_data/denoised_audio/")
+            merge_count = gr.Number(label=gettext("merge_count"), value=1)
             submit_button = gr.Button(gettext("submit"), variant="primary")
             output = gr.Textbox(label=gettext("output"))
 
-            submit_button.click(submit, inputs=[denoise_audio_dir, language_model, whisper_size], outputs=[output])
+            submit_button.click(submit, inputs=[denoise_audio_dir, language_model, whisper_size, merge_count], outputs=[output])
 
     translate_blocks(block=transcribe_audio_blocks, translation=_translations, lang=lang)
