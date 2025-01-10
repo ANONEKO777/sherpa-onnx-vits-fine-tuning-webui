@@ -73,6 +73,13 @@ def preprocess(languages, add_auxiliary_data):
         if cc_duplicate == 0:
             cc_duplicate = 1
 
+        # Determine text_cleaners based on languages
+        if languages == "CJE":
+            text_cleaners = ["cjke_cleaners2"]
+        elif languages == "CJ":
+            text_cleaners = ["zh_ja_mixture_cleaners"]
+        elif languages == "C":
+            text_cleaners = ["chinese_cleaners"]
 
         # STEP 2: modify config file
         with open("training_data/configs/finetune_speaker.json", 'r', encoding='utf-8') as f:
@@ -91,6 +98,8 @@ def preprocess(languages, add_auxiliary_data):
         hps['train']['batch_size'] = 16
         hps['data']['training_files'] = "training_data/final_annotation_train.txt"
         hps['data']['validation_files'] = "training_data/final_annotation_val.txt"
+        # set text_cleaners
+        hps['data']['text_cleaners'] = text_cleaners
         # save modified config
         with open("training_data/configs/modified_finetune_speaker.json", 'w', encoding='utf-8') as f:
             json.dump(hps, f, indent=2)
@@ -125,6 +134,15 @@ def preprocess(languages, add_auxiliary_data):
         print("finished")
     else:
         # Do not add extra helper data
+
+        # Determine text_cleaners based on languages
+        if languages == "CJE":
+            text_cleaners = ["cjke_cleaners2"]
+        elif languages == "CJ":
+            text_cleaners = ["zh_ja_mixture_cleaners"]
+        elif languages == "C":
+            text_cleaners = ["chinese_cleaners"]
+
         # STEP 1: modify config file
         with open("training_data/configs/finetune_speaker.json", 'r', encoding='utf-8') as f:
             hps = json.load(f)
@@ -142,6 +160,8 @@ def preprocess(languages, add_auxiliary_data):
         hps['train']['batch_size'] = 16
         hps['data']['training_files'] = "training_data/final_annotation_train.txt"
         hps['data']['validation_files'] = "training_data/final_annotation_val.txt"
+        # set text_cleaners
+        hps['data']['text_cleaners'] = text_cleaners
         # save modified config
         with open("training_data/configs/modified_finetune_speaker.json", 'w', encoding='utf-8') as f:
             json.dump(hps, f, indent=2)
