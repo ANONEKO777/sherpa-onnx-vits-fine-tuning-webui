@@ -121,12 +121,12 @@ def create_export_onnx_interface(lang):
             # 當 model_folder 選擇改變時，更新 pytorch_file 的選項
             model_folder.change(fn=update_pytorch_files, inputs=model_folder, outputs=pytorch_file)
             model_comment = gr.Textbox(label=gettext("model_comment"))
-            languages = ["Chinese", "English+Chinese", "English+Chinese+Japanese"]
+            languages = ["Chinese", "Chinese+Japanese", "Chinese+Japanese+English"]
             language = gr.Dropdown(label=gettext("language"), choices=languages)
             model_name = gr.Textbox(label=gettext("model_name"))
             submit_button = gr.Button(gettext("submit"), variant="primary")
             output = gr.Textbox(label=gettext("output"))
 
             submit_button.click(export_submit, inputs=[model_folder, model_comment, language, model_name, pytorch_file], outputs=output)
-    
+
     translate_blocks(block=export_onnx_blocks, translation=_translations, lang=lang)
