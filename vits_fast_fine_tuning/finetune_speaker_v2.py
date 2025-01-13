@@ -150,8 +150,8 @@ def run(rank, n_gpus, hps):
           print("Failed to find latest checkpoint, loading G_0.pth...")
           if hps.train_with_pretrained_model:
               print("Train with pretrained model...")
-              _, _, _, epoch_str = utils.load_checkpoint("training_data/pretrained_models/G_0.pth", net_g, None)
-              _, _, _, epoch_str = utils.load_checkpoint("training_data/pretrained_models/D_0.pth", net_d, None)
+              _, _, _, epoch_str = utils.load_checkpoint(hps.pretrained.generator_path, net_g, None)
+              _, _, _, epoch_str = utils.load_checkpoint(hps.pretrained.discriminator_path, net_d, None)
           else:
               print("Train without pretrained model...")
           epoch_str = 1
@@ -159,8 +159,8 @@ def run(rank, n_gpus, hps):
   else:
       if hps.train_with_pretrained_model:
           print("Train with pretrained model...")
-          _, _, _, epoch_str = utils.load_checkpoint("training_data/pretrained_models/G_0.pth", net_g, None)
-          _, _, _, epoch_str = utils.load_checkpoint("training_data/pretrained_models/D_0.pth", net_d, None)
+          _, _, _, epoch_str = utils.load_checkpoint(hps.pretrained.generator_path, net_g, None)
+          _, _, _, epoch_str = utils.load_checkpoint(hps.pretrained.discriminator_path, net_d, None)
       else:
           print("Train without pretrained model...")
       epoch_str = 1
@@ -303,10 +303,10 @@ def train_and_evaluate(rank, epoch, hps, nets, optims, schedulers, scaler, loade
 
       if global_step % hps.train.eval_interval == 0:
         evaluate(hps, net_g, eval_loader, writer_eval)
-        
+
         utils.save_checkpoint(net_g, None, hps.train.learning_rate, epoch,
                               os.path.join(hps.model_dir, "G_latest.pth"))
-        
+
         utils.save_checkpoint(net_d, None, hps.train.learning_rate, epoch,
                               os.path.join(hps.model_dir, "D_latest.pth"))
         # save to google drive
