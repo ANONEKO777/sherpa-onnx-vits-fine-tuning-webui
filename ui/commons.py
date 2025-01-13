@@ -1,5 +1,7 @@
 from typing import Union, Iterable
+import os
 
+import gradio
 import gradio_i18n
 from gradio.themes.soft import Soft
 from gradio.themes.utils import colors, fonts, sizes
@@ -89,3 +91,26 @@ def gettext(key):
     if _page_prefix is None:
         raise ValueError("Page prefix is not set. Please call set_page_prefix() first.")
     return gradio_i18n.gettext(f"{_page_prefix}_{key}")
+
+# 本專案輸出的模型資料夾預設路徑
+_pytorch_model_folder = "models"
+_onnx_export_folder = "onnx-output"
+
+def get_vits_model_path():
+    return _pytorch_model_folder
+
+def get_onnx_export_path():
+    return _onnx_export_folder
+
+# 讀取資料夾底下的子資料夾項目
+def get_vits_model_folders():
+    return [f.name for f in os.scandir(_pytorch_model_folder) if f.is_dir()]
+
+def get_onnx_model_folders():
+    return [f.name for f in os.scandir(_onnx_export_folder) if f.is_dir()]
+
+# 會自動搜尋pytorch模型資料夾底下的.pth檔案，並更新給gradio的dropdown
+def update_pytorch_files(model_folder):
+    # 獲取選定文件夾中的所有 .pth 文件
+    pth_files = [f for f in os.listdir(os.path.join(get_vits_model_path(), model_folder)) if f.endswith('.pth')]
+    return gradio.update(choices=pth_files)

@@ -3,15 +3,15 @@ import numpy as np
 import torch
 from torch import no_grad, LongTensor
 import argparse
-import commons
-from mel_processing import spectrogram_torch
-import utils
-from models import SynthesizerTrn
+from . import commons
+from .mel_processing import spectrogram_torch
+from . import utils
+from .models import SynthesizerTrn
 import gradio as gr
 import librosa
 import webbrowser
 
-from text import text_to_sequence, _clean_text
+from .text import text_to_sequence, _clean_text
 device = "cuda:0" if torch.cuda.is_available() else "cpu"
 import logging
 logging.getLogger("PIL").setLevel(logging.WARNING)
@@ -23,11 +23,11 @@ logging.getLogger("asyncio").setLevel(logging.WARNING)
 language_marks = {
     "Japanese": "",
     "日本語": "[JA]",
-    "简体中文": "[ZH]",
+    "正體中文": "[ZH]",
     "English": "[EN]",
     "Mix": "",
 }
-lang = ['日本語', '简体中文', 'English', 'Mix']
+lang = ['日本語', '正體中文', 'English', 'Mix']
 def get_text(text, hps, is_symbol):
     text_norm = text_to_sequence(text, hps.symbols, [] if is_symbol else hps.data.text_cleaners)
     if hps.data.add_blank:
