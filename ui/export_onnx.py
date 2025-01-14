@@ -8,9 +8,7 @@ from gradio_i18n import gettext, translate_blocks
 from vits_fast_fine_tuning import utils
 import export_vits_fast_fine_tuning_onnx as export_onnx
 from .commons import add_prefix_to_translations, gettext, set_page_prefix
-
-_pytorch_model_folder = "models"
-_onnx_export_folder = "onnx-output"
+from .commons import get_vits_model_folders, get_vits_model_path, get_onnx_export_path, update_pytorch_files
 
 # 定義多國語言文字
 _translations = {
@@ -68,28 +66,17 @@ _page_prefix = "export_onnx"
 # 使用函數為每個鍵增加前綴，原因是目前i18n套件的字典是全介面共用的，因此用前綴區分不同功能頁面的翻譯
 _translations = add_prefix_to_translations(_translations, _page_prefix)
 
-# 讀取 models 資料夾底下的子資料夾項目
-def get_model_folders():
-    return [f.name for f in os.scandir(_pytorch_model_folder) if f.is_dir()]
-
 # 重新整理 model_folders
 def refresh_model_folders():
-    model_folders = get_model_folders()
+    model_folders = get_vits_model_folders()
     return gr.update(choices=model_folders)
-
-# 定義更新 pytorch_file 選項的函數
-def update_pytorch_files(model_folder):
-    # 獲取選定文件夾中的所有 .pth 文件
-    pth_files = [f for f in os.listdir(os.path.join(_pytorch_model_folder, model_folder)) if f.endswith('.pth')]
-    return gr.update(choices=pth_files)
-
 
 def export_submit(model_folder, model_comment, language, model_name, pytorch_file):
     with set_page_prefix(_page_prefix):
         args = argparse.Namespace(
-            config=os.path.join(_pytorch_model_folder, model_folder, "config.json"),
-            checkpoint=os.path.join(_pytorch_model_folder, model_folder, pytorch_file),
-            output_dir=_onnx_export_folder,
+            config=os.path.join(get_vits_model_path(), model_folder, "config.json"),
+            checkpoint=os.path.join(get_vits_model_path(), model_folder, pytorch_file),
+            output_dir=get_onnx_export_path(),
             comment=model_comment,
             language=language,
             model_name=f"vits-{model_name}",
@@ -106,7 +93,7 @@ def export_submit(model_folder, model_comment, language, model_name, pytorch_fil
     return str1 + str2 + str3 + str4 + str5
 
 def create_export_onnx_interface(lang):
-    model_folders = get_model_folders()
+    model_folders = get_vits_model_folders()
     with set_page_prefix(_page_prefix):
         with gr.Blocks() as export_onnx_blocks:
             title = gr.Markdown(gettext("title"))
@@ -121,12 +108,12 @@ def create_export_onnx_interface(lang):
             # 當 model_folder 選擇改變時，更新 pytorch_file 的選項
             model_folder.change(fn=update_pytorch_files, inputs=model_folder, outputs=pytorch_file)
             model_comment = gr.Textbox(label=gettext("model_comment"))
-            languages = ["Chinese", "English+Chinese", "English+Chinese+Japanese"]
+            languages = ["Chinese", "Chinese+Japanese", "Chinese+Japanese+English"]
             language = gr.Dropdown(label=gettext("language"), choices=languages)
             model_name = gr.Textbox(label=gettext("model_name"))
             submit_button = gr.Button(gettext("submit"), variant="primary")
             output = gr.Textbox(label=gettext("output"))
 
             submit_button.click(export_submit, inputs=[model_folder, model_comment, language, model_name, pytorch_file], outputs=output)
-    
+
     translate_blocks(block=export_onnx_blocks, translation=_translations, lang=lang)

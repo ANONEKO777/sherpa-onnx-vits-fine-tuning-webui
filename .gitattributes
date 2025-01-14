@@ -1,2 +1,8 @@
 training_data/pretrained_models/D_0.pth filter=lfs diff=lfs merge=lfs -text
 training_data/pretrained_models/G_0.pth filter=lfs diff=lfs merge=lfs -text
+training_data/pretrained_models/C/D_0.pth filter=lfs diff=lfs merge=lfs -text
+training_data/pretrained_models/C/G_0.pth filter=lfs diff=lfs merge=lfs -text
+training_data/pretrained_models/CJ/D_0.pth filter=lfs diff=lfs merge=lfs -text
+training_data/pretrained_models/CJ/G_0.pth filter=lfs diff=lfs merge=lfs -text
+training_data/pretrained_models/CJE/D_0.pth filter=lfs diff=lfs merge=lfs -text
+training_data/pretrained_models/CJE/G_0.pth filter=lfs diff=lfs merge=lfs -text

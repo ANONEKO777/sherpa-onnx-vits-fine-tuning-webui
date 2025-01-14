@@ -19,7 +19,7 @@
 
 本專案的開發目標是為了更方便訓練自己的語音模型，並讓語音模型能在Android、iOS等移動端平台使用。
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > 請注意，本專案目前仍處於開發階段，使用上可能會出現錯誤或bug，請見諒。歡迎和我聯繫或提供issue與解決方案。
 
 ## 為什麼使用VITS?
@@ -28,7 +28,7 @@ VITS為端到端文字轉語音 (TTS) 模型，提供自然且流露情緒的語
 ## 為什麼使用Sherpa-Onnx?
 Sherpa-Onnx框架使用新一代 Kaldi 和 onnxruntime 進行語音轉文字、文字轉語音、說話者辨識和 VAD，無需連接網路。支援嵌入式系統、Android, iOS, Raspberry Pi, RISC-V, x86_64 servers, websocket server/client, C/C++, Python, Kotlin, C#, Go, NodeJS, Java, Swift, Dart, JavaScript, Flutter, Object Pascal, Lazarus, Rust。因此將VITS訓練後的模型格式轉換為Sherpa-Onnx，能更有效在多平台上使用。
 
-# Todo List
+# 本專案功能
 
 - [x] **提供轉換用的腳本。**
 - [x] **提供可供操作的WebUI。**
@@ -36,9 +36,9 @@ Sherpa-Onnx框架使用新一代 Kaldi 和 onnxruntime 進行語音轉文字、�
   - [x] 支援從Youtube上批量下載語音。
   - [x] 支援長語音切分成短語音功能。
   - [x] 支援語音降躁，支援whisper語音轉文字辨識，標註文件。
-  - [ ] 支援VITS訓練。
+  - [x] 支援VITS訓練。
   - [ ] 支援使用短語音、長語音、影片三種不同形式的素材進行訓練。
-  - [ ] 訓練後可直接用模型推理。
+  - [x] 訓練後可直接用模型推理。
   - [x] 支援Pytorch模型轉換為Sherpa-Onnx模型。
   - [x] Sherpa-Onnx模型推理。
 - [ ] 提供一鍵安裝自動執行所有安裝指令。
@@ -46,28 +46,17 @@ Sherpa-Onnx框架使用新一代 Kaldi 和 onnxruntime 進行語音轉文字、�
 - [ ] 提供Colab腳本。
 
 # 安裝與使用
-> [!TIP]  
+> [!TIP]
 > 本專案使用的python是3.8版本，其他版本可能會有問題。
 
-## 將預訓練模型轉換為Sherpa-Onnx格式
-### 1. 下載預訓練模型
-Linux
-```bash
-wget https://huggingface.co/spaces/zomehwh/vits-uma-genshin-honkai/resolve/main/model/G_953000.pth -P models/vits-uma-genshin-honkai
-wget https://huggingface.co/spaces/zomehwh/vits-uma-genshin-honkai/resolve/main/model/config.json -P models/vits-uma-genshin-honkai
-```
-Windows
-```bash
-Invoke-WebRequest -Uri https://huggingface.co/spaces/zomehwh/vits-uma-genshin-honkai/resolve/main/model/G_953000.pth -OutFile models/vits-uma-genshin-honkai/G_953000.pth
-Invoke-WebRequest -Uri https://huggingface.co/spaces/zomehwh/vits-uma-genshin-honkai/resolve/main/model/config.json -OutFile models/vits-uma-genshin-honkai/config.json
-```
+## 安裝
 
-### 2. 建立虛擬環境
+### 1. 建立虛擬環境
 ```bash
 python3 -m venv venv
 ```
 
-### 3. 啟動虛擬環境
+### 2. 啟動虛擬環境
 Linux
 ```bash
 source venv/bin/activate
@@ -77,16 +66,79 @@ Windows
 venv\Scripts\activate
 ```
 
-### 4. 安裝依賴
+### 3. 安裝依賴
 ```bash
 pip install -r requirements.txt
 python vits_fast_fine_tuning/monotonic_align/setup.py build_ext
 ```
 
-### 5. 執行腳本
+### 4. 安裝ffmpeg
+> [!NOTE] 如果使用的時候發現無法找到ffmpeg，如以下的錯誤訊息，則需要安裝ffmpeg的library。
+```bash
+DEBUG:torio._extension.utils:Loading FFmpeg
+DEBUG:torio._extension.utils:Failed to load FFmpeg extension.
+```
+
+根據torch的[官方說明](https://pytorch.org/audio/2.3.0/installation.html)，透過下述的命名法則來尋找library，如果有安裝上的問題可先找找是否能找到相關的檔案。
+> When searching for FFmpeg installation, TorchAudio looks for library files which have names with version numbers. That is, libavutil.so.<VERSION> for Linux, libavutil.<VERSION>.dylib for macOS, and avutil-<VERSION>.dll for Windows. Many public pre-built binaries follow this naming scheme, but some distributions have un-versioned file names. If you are having difficulties detecting FFmpeg, double check that the library files you installed follow this naming scheme, (and then make sure that they are in one of the directories listed in library search path.)
+
+> 當搜尋 FFmpeg 安裝時，TorchAudio 會尋找名稱帶有版本號的庫檔案。即， libavutil.so.<VERSION> （適用於 Linux）、 libavutil.<VERSION>.dylib （適用於 macOS）和avutil-<VERSION>.dll （適用於 Windows）。許多公共預先建置的二進位檔案都遵循此命名方案，但某些發行版具有未版本化的檔案名稱。如果您在偵測 FFmpeg 時遇到困難，請仔細檢查您安裝的程式庫檔案是否遵循此命名方案（然後確保它們位於庫搜尋路徑中列出的目錄之一中。）
+
+Windows版本安裝ffmpeg可以透過以下的github找到編譯好的library。
+https://github.com/BtbN/FFmpeg-Builds/releases
+
+要特別注意要找的是有包含library的版本，且因為本專案使用的torchaudio需要用版本6、5、4的ffmpeg，建議可從下列網址進行下載。
+https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n6.1-latest-win64-lgpl-shared-6.1.zip
+
+
+## 啟動WebUI
+> [!TIP]
+> 目前多數功能已經可以在WebUI上操作。
 
 ```bash
-python export_vits_fast_fine_tuning_onnx.py --config ./models/vits-uma-genshin-honkai/config.json --checkpoint ./models/vits-uma-genshin-honkai/G_953000.pth
+python webui.py
+```
+
+### 使用者介面
+<div align="center">
+  <img src="./images/project-overview-1.png" alt="" width="600"/>
+</div>
+
+<div align="center">
+  <img src="./images/project-overview-2.png" alt="" width="600"/>
+</div>
+
+<div align="center">
+  <img src="./images/project-overview-3.png" alt="" width="600"/>
+</div>
+
+<div align="center">
+  <img src="./images/project-overview-4.png" alt="" width="600"/>
+</div>
+
+<div align="center">
+  <img src="./images/project-overview-5.png" alt="" width="600"/>
+</div>
+
+<div align="center">
+  <img src="./images/project-overview-6.png" alt="" width="600"/>
+</div>
+
+<div align="center">
+  <img src="./images/project-overview-7.png" alt="" width="600"/>
+</div>
+
+<div align="center">
+  <img src="./images/project-overview-8.png" alt="" width="600"/>
+</div>
+
+## 將預訓練模型轉換為Sherpa-Onnx格式
+假設已有許多預訓練模型，單純想使用轉換功能時，可用以下腳本。
+
+### 1. 執行腳本
+
+```bash
+python export_vits_fast_fine_tuning_onnx.py --config ./models/vits-xxx/config.json --checkpoint ./models/vits-xxx/G_latest.pth
 ```
 命令列的可用參數說明
  - --config 必要 vits訓練完成後產生的config檔。
@@ -96,7 +148,7 @@ python export_vits_fast_fine_tuning_onnx.py --config ./models/vits-uma-genshin-h
  - --language 可選 onnx模型內的語言資訊。
  - --model_name 可選 模型名稱，主要使用在輸出資料夾內建立子資料夾時的名稱。
 
-### 6. 輸出結果
+### 2. 輸出結果
 輸出成功後在資料夾onnx-output內應該能找到模型名稱的資料夾，資料夾底下應該會有以下檔案與結構，這些檔案都是sherpa-onnx會用到的。model.onnx是原始模型，model.int8.onnx是量化後的模型，兩者擇一即可。model-opt.onnx是優化後的模型，目前尚不確定sherpa-onnx是否支援。
 ```bash
 │  date.fst
@@ -124,68 +176,12 @@ python export_vits_fast_fine_tuning_onnx.py --config ./models/vits-uma-genshin-h
             prob_trans.utf8
 ```
 
-### 7. 推理
+### 3. 推理
 ```bash
-python onnx_inference.py --checkpoint ./onnx-output/vits-uma-genshin-honkai/model.onnx --lexicon ./onnx-output/vits-uma-genshin-honkai/lexicon.txt --tokens ./onnx-output/vits-uma-genshin-honkai/tokens.txt
+python onnx_inference.py --checkpoint ./onnx-output/vits-xxx/model.onnx --lexicon ./onnx-output/vits-xxx/lexicon.txt --tokens ./onnx-output/vits-xxx/tokens.txt
 ```
 命令列的可用參數說明
  - --checkpoint 必要 onnx模型。
  - --lexicon 必要 模型使用的音素表。
  - --token 必要 模型使用的符號表。
  - --text 可選 用來文字轉語音的內容。
-
-## 啟動WebUI
-> [!NOTE]  
-> 功能尚在開發中。
-
-```bash
-python webui.py
-```
-
-### 使用者介面
-<div align="center">
-  <img src="./images/project-overview-1.png" alt="" width="600"/>
-</div>
-
-<div align="center">
-  <img src="./images/project-overview-2.png" alt="" width="600"/>
-</div>
-
-<div align="center">
-  <img src="./images/project-overview-3.png" alt="" width="600"/>
-</div>
-
-<div align="center">
-  <img src="./images/project-overview-4.png" alt="" width="600"/>
-</div>
-
-## 訓練指令
-> [!NOTE]  
-> 功能尚在開發中。
-```bash
-# 已改用yt-dlp，原本該專案使用的youtube-dl已經無法下載影片
-python scripts/download_video.py
-# 還有bug
-python scripts/video2audio.py
-python scripts/denoise_audio.py
-# 注意whisper必須要有ffmpeg
-python scripts/long_audio_transcribe.py --languages "C" --whisper_size large-v2
-```
-
-請注意，如果訓練的時候發現無法找到ffmpeg，如以下的錯誤訊息，則需要安裝ffmpeg的library。
-```bash
-DEBUG:torio._extension.utils:Loading FFmpeg
-DEBUG:torio._extension.utils:Failed to load FFmpeg extension.
-```
-
-根據torch的[官方說明](https://pytorch.org/audio/2.3.0/installation.html)，透過下述的命名法則來尋找library，如果有安裝上的問題可先找找是否能找到相關的檔案。
-> When searching for FFmpeg installation, TorchAudio looks for library files which have names with version numbers. That is, libavutil.so.<VERSION> for Linux, libavutil.<VERSION>.dylib for macOS, and avutil-<VERSION>.dll for Windows. Many public pre-built binaries follow this naming scheme, but some distributions have un-versioned file names. If you are having difficulties detecting FFmpeg, double check that the library files you installed follow this naming scheme, (and then make sure that they are in one of the directories listed in library search path.)
-
-> 當搜尋 FFmpeg 安裝時，TorchAudio 會尋找名稱帶有版本號的庫檔案。即， libavutil.so.<VERSION> （適用於 Linux）、 libavutil.<VERSION>.dylib （適用於 macOS）和avutil-<VERSION>.dll （適用於 Windows）。許多公共預先建置的二進位檔案都遵循此命名方案，但某些發行版具有未版本化的檔案名稱。如果您在偵測 FFmpeg 時遇到困難，請仔細檢查您安裝的程式庫檔案是否遵循此命名方案（然後確保它們位於庫搜尋路徑中列出的目錄之一中。）
-
-Windows版本安裝ffmpeg可以透過以下的github找到編譯好的library。
-https://github.com/BtbN/FFmpeg-Builds/releases
-
-要特別注意要找的是有包含library的版本，且因為本專案使用的torchaudio需要用版本6、5、4的ffmpeg，建議可從下列網址進行下載。
-https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n6.1-latest-win64-lgpl-shared-6.1.zip
-
