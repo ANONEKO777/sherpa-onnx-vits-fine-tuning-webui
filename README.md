@@ -89,7 +89,7 @@ https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n6.1-lates
 
 ## Launching the WebUI
 > [!TIP]
-> 目前多數功能已經可以在WebUI上操作。
+> Most features can now be operated through the WebUI.
 
 ```bash
 python webui.py

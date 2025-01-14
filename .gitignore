@@ -173,6 +173,12 @@ cython_debug/
 /training_data/final_annotation_val.txt
 /training_data/long_character_anno.txt
 
+# 忽略一些可能想要用來暫存的訓練檔案名稱，比如在部分檔案名稱的末尾加上註解
+/training_data/final_annotation_train_*.txt
+/training_data/final_annotation_val_*.txt
+/training_data/long_character_anno_*.txt
+/training_data/configs/modified_finetune_speaker_*.json
+
 # 維持.gitkeep檔案可以讓空資料夾被git追蹤
 !/onnx-output/.gitkeep
 !/models/.gitkeep
