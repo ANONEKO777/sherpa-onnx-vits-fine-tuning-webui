@@ -73,7 +73,8 @@ python vits_fast_fine_tuning/monotonic_align/setup.py build_ext
 ```
 
 ### 4. ffmpegをインストールする
-> [!NOTE] トレーニング中にffmpegが見つからない場合、以下のエラーメッセージが表示されることがあります。その場合は、ffmpegライブラリをインストールする必要があります。
+> [!NOTE]
+> トレーニング中にffmpegが見つからない場合、以下のエラーメッセージが表示されることがあります。その場合は、ffmpegライブラリをインストールする必要があります。
 ```bash
 DEBUG:torio._extension.utils:Loading FFmpeg
 DEBUG:torio._extension.utils:Failed to load FFmpeg extension.

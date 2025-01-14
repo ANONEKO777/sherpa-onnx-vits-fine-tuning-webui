@@ -73,7 +73,8 @@ python vits_fast_fine_tuning/monotonic_align/setup.py build_ext
 ```
 
 ### 4. 安裝ffmpeg
-> [!NOTE] 如果使用的時候發現無法找到ffmpeg，如以下的錯誤訊息，則需要安裝ffmpeg的library。
+> [!NOTE]
+> 如果使用的時候發現無法找到ffmpeg，如以下的錯誤訊息，則需要安裝ffmpeg的library。
 ```bash
 DEBUG:torio._extension.utils:Loading FFmpeg
 DEBUG:torio._extension.utils:Failed to load FFmpeg extension.
