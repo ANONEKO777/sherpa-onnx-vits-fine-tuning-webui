@@ -76,7 +76,8 @@ def run_finetuning(
         continue_training: bool,
         drop_speaker_embed: bool,
         train_with_pretrained_model: bool,
-        preserved_models: int
+        preserved_models: int,
+        batch_size: int
     ):
     """Assume Single Node Multi GPUs Training Only"""
     assert torch.cuda.is_available(), "CPU training is not allowed."
@@ -96,6 +97,7 @@ def run_finetuning(
     )
 
     hps = utils.get_hparams(args)
+    hps.train.batch_size = batch_size
     mp.spawn(run, nprocs=n_gpus, args=(n_gpus, hps,))
 
 def run(rank, n_gpus, hps):

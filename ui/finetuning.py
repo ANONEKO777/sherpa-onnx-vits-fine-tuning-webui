@@ -1,4 +1,5 @@
 import os
+import json
 
 import gradio as gr
 from gradio_i18n import gettext, translate_blocks
@@ -22,6 +23,9 @@ _translations = {
         "Number of Preserved Models": "Number of Preserved Models",
         "Run Fine-tuning": "Run Fine-tuning",
         "Output": "Output",
+        "Batch Size": "Batch Size",
+        "Batch Size Info": "The higher the batch size, the more VRAM it will occupy, but the training speed will be faster.",
+        "Sampling Rate": "Sampling Rate",
     },
     "zh": {
         "Config Path": "設定檔路徑",
@@ -38,6 +42,9 @@ _translations = {
         "Number of Preserved Models": "保留模型數量",
         "Run Fine-tuning": "執行微調",
         "Output": "輸出",
+        "Batch Size": "批次大小",
+        "Batch Size Info": "批次越高佔用的VRAM越多，但訓練速度會加快",
+        "Sampling Rate": "取樣率",
     },
     "ja": {
         "Config Path": "設定ファイルのパス",
@@ -54,17 +61,27 @@ _translations = {
         "Number of Preserved Models": "保存されるモデルの数",
         "Run Fine-tuning": "ファインチューニングを実行",
         "Output": "出力",
+        "Batch Size": "バッチサイズ",
+        "Batch Size Info": "バッチサイズが大きいほどVRAMを占有しますが、トレーニング速度が速くなります。",
+        "Sampling Rate": "サンプリングレート",
     },
 }
 
 _page_prefix = "finetuning"
 _translations = add_prefix_to_translations(_translations, _page_prefix)
 
-def finetuning(config_path, model_name, max_epochs, continue_training, drop_speaker_embed, train_with_pretrained_model, preserved_models):
+def finetuning(config_path, model_name, max_epochs, continue_training, drop_speaker_embed, train_with_pretrained_model, preserved_models, batch_size, sampling_rate):
     # 自動在model_name前面加上models/路徑(專案預設輸出vits模型路徑)
     model_name = os.path.join("models", f"vits-{model_name}")
 
-    finetune_speaker_v2.run_finetuning(config_path, model_name, max_epochs, continue_training, drop_speaker_embed, train_with_pretrained_model, preserved_models)
+    # Update the configuration file with the new sampling_rate
+    with open(config_path, 'r', encoding='utf-8') as f:
+        config = json.load(f)
+    config['data']['sampling_rate'] = int(sampling_rate)
+    with open(config_path, 'w', encoding='utf-8') as f:
+        json.dump(config, f, indent=2)
+
+    finetune_speaker_v2.run_finetuning(config_path, model_name, max_epochs, continue_training, drop_speaker_embed, train_with_pretrained_model, preserved_models, batch_size)
 
 def create_finetuning_interface(lang):
     with set_page_prefix(_page_prefix):
@@ -76,12 +93,14 @@ def create_finetuning_interface(lang):
             drop_speaker_embed = gr.Checkbox(label=gettext("Drop Speaker Embed"), value=True, info=gettext("Drop Speaker Embed Info"))
             train_with_pretrained_model = gr.Checkbox(label=gettext("Train with Pretrained Model"), value=True, info=gettext("Train with Pretrained Model Info"))
             preserved_models = gr.Number(label=gettext("Number of Preserved Models"), value=4)
+            batch_size = gr.Number(label=gettext("Batch Size"), value=32, info=gettext("Batch Size Info"))
+            sampling_rate = gr.Textbox(label=gettext("Sampling Rate"), value="16000")
             submit_button = gr.Button(value=gettext("Run Fine-tuning"), variant="primary")
             output = gr.Textbox(label=gettext("Output"))
-            
+
             # 打勾continue_training時，drop_speaker_embed必須關閉；反之亦然
             continue_training.change(fn=lambda x: gr.update(value=not x), inputs=continue_training, outputs=drop_speaker_embed)
 
-            submit_button.click(finetuning, inputs=[config_path, model_name, max_epochs, continue_training, drop_speaker_embed, train_with_pretrained_model, preserved_models], outputs=[output])
+            submit_button.click(finetuning, inputs=[config_path, model_name, max_epochs, continue_training, drop_speaker_embed, train_with_pretrained_model, preserved_models, batch_size, sampling_rate], outputs=[output])
 
     translate_blocks(block=finetuning_blocks, translation=_translations, lang=lang)
