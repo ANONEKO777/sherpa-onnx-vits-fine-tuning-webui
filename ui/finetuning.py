@@ -23,6 +23,7 @@ _translations = {
         "Run Fine-tuning": "Run Fine-tuning",
         "Output": "Output",
         "Batch Size": "Batch Size",
+        "Batch Size Info": "The higher the batch size, the more VRAM it will occupy, but the training speed will be faster.",
     },
     "zh": {
         "Config Path": "設定檔路徑",
@@ -40,6 +41,7 @@ _translations = {
         "Run Fine-tuning": "執行微調",
         "Output": "輸出",
         "Batch Size": "批次大小",
+        "Batch Size Info": "批次越高佔用的VRAM越多，但訓練速度會加快",
     },
     "ja": {
         "Config Path": "設定ファイルのパス",
@@ -57,6 +59,7 @@ _translations = {
         "Run Fine-tuning": "ファインチューニングを実行",
         "Output": "出力",
         "Batch Size": "バッチサイズ",
+        "Batch Size Info": "バッチサイズが大きいほどVRAMを占有しますが、トレーニング速度が速くなります。",
     },
 }
 
@@ -79,10 +82,10 @@ def create_finetuning_interface(lang):
             drop_speaker_embed = gr.Checkbox(label=gettext("Drop Speaker Embed"), value=True, info=gettext("Drop Speaker Embed Info"))
             train_with_pretrained_model = gr.Checkbox(label=gettext("Train with Pretrained Model"), value=True, info=gettext("Train with Pretrained Model Info"))
             preserved_models = gr.Number(label=gettext("Number of Preserved Models"), value=4)
-            batch_size = gr.Number(label=gettext("Batch Size"), value=128)
+            batch_size = gr.Number(label=gettext("Batch Size"), value=32, info=gettext("Batch Size Info"))
             submit_button = gr.Button(value=gettext("Run Fine-tuning"), variant="primary")
             output = gr.Textbox(label=gettext("Output"))
-            
+
             # 打勾continue_training時，drop_speaker_embed必須關閉；反之亦然
             continue_training.change(fn=lambda x: gr.update(value=not x), inputs=continue_training, outputs=drop_speaker_embed)
 
