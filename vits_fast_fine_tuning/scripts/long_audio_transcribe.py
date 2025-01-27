@@ -1,9 +1,6 @@
-from moviepy.editor import AudioFileClip
 import whisper
 import os
-import json
 import torchaudio
-import librosa
 import torch
 import argparse
 
@@ -91,7 +88,8 @@ def segment_audio_merged(result, lang2token, lang, wav, sr, character_name, code
         torchaudio.save(savepth, wav_seg, target_sr, channels_first=True)
     return speaker_annos
 
-def transcribe_audio(denoise_audio_dir, languages, whisper_size, merge_count):
+def transcribe_audio(denoise_audio_dir, languages, whisper_size, target_sr, merge_count):
+    target_sr = int(target_sr)
     if languages == "CJE":
         lang2token = {
             'zh': "[ZH]",
@@ -110,10 +108,6 @@ def transcribe_audio(denoise_audio_dir, languages, whisper_size, merge_count):
 
     if not torch.cuda.is_available():
         print("Please enable GPU in order to run Whisper!")
-
-    with open("training_data/configs/finetune_speaker.json", 'r', encoding='utf-8') as f:
-        hps = json.load(f)
-    target_sr = hps['data']['sampling_rate']
 
     filelist = list(os.walk(denoise_audio_dir))[0][2]
 

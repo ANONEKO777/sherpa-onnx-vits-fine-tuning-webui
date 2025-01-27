@@ -6,6 +6,7 @@ import argparse
 import json
 
 import torchaudio
+from moviepy.editor import AudioFileClip
 
 from . import demucs_api
 
@@ -29,25 +30,28 @@ def get_args():
 def check_args(args):
     assert os.path.isdir(args.raw_audio_dir), args.raw_audio_dir
 
-def denoise_audio(raw_audio_dir, denoise_audio_dir):
+def denoise_audio(raw_audio_dir, denoise_audio_dir, target_sr):
     # 檢查raw_audio_dir是否存在，不存在跳錯誤訊息
     if not os.path.isdir(raw_audio_dir):
         print(f"raw_audio_dir: {raw_audio_dir} not found!")
         return
-    
+
+    target_sr = int(target_sr)
     filelist = list(os.walk(raw_audio_dir))[0][2]
 
     if not os.path.exists(denoise_audio_dir):
         os.makedirs(denoise_audio_dir)
 
-    # Get the target sampling rate
-    with open("training_data/configs/finetune_speaker.json", 'r', encoding='utf-8') as f:
-        hps = json.load(f)
-    target_sr = hps['data']['sampling_rate']
-
     separator = demucs_api.Separator()
 
     for file in filelist:
+        print(f"Processing {file}")
+        # 遇到mp4檔案，先轉換成wav
+        if file.endswith(".mp4"):
+            audio = AudioFileClip(os.path.join(raw_audio_dir, file))
+            audio.write_audiofile(filename=os.path.join(raw_audio_dir, file.replace(".mp4", ".wav")), fps=target_sr)
+            file = file.replace(".mp4", ".wav")
+
         if file.endswith(".wav"):
             origin, separated = separator.separate_audio_file(os.path.join(raw_audio_dir, file))
             for stem, source in separated.items():
